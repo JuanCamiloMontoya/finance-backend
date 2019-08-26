@@ -22,9 +22,11 @@ export class MovementController {
       return this.movementService.GetMovement(UserId);
     }
 
+    //todos
     @Get('getAll')
     async getUserAll(){{
         const response = await this.movementService.getMovementAll();
+        console.log(response);
         return response;
     }}
 
@@ -34,10 +36,10 @@ export class MovementController {
       return this.movementService.GetMovementGasto(UserId);
     }
 
-    @Get('ingresos/:UserId')
-    async GetMovementIngresos(@Param('UserId') UserId){
+    @Get('revenue/:UserId')
+    async GetMovementRevenue(@Param('UserId') UserId){
       console.log(UserId)
-      return this.movementService.GetMovementIngreso(UserId);
+      return this.movementService.GetMovementRevenue(UserId);
     }
   
 }

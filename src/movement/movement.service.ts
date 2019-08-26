@@ -47,17 +47,21 @@ export class MovementService {
        
         return         await this.movementRepository
         .createQueryBuilder("movement")
+        .addSelect("account.title")
         
-        .innerJoin("account","account","movement.fk_id_account = account.id_account") 
+        .innerJoin("account","account","movement.fk_account = account.id") 
     
-        .where("account.fkIdPerson= :fk_id_persona", { id : UserId } )
+        .where("account.fk_user= :id", { id : UserId } )
     
        //la fk debe ser tal cual como esta en entities al lado donde se referencia
-         .execute();
+         .getMany();
+         //.execute();
     /* */
      
     
       }
+
+
       async getMovementAll() {
         return await this.movementRepository.find();
     }
@@ -86,7 +90,7 @@ export class MovementService {
      
       }
 
-      async GetMovementIngreso(UserId){
+      async GetMovementRevenue(UserId){
         return await this.userRepository
         .createQueryBuilder("user1")
         .select("movement.id_movement", "id")
