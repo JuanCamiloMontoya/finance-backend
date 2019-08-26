@@ -27,8 +27,7 @@ export class category {
 
     @Column("varchar",{ 
         nullable:false,
-        length:10,
-        default: () => "'active'",
+        length:1,
         name:"state"
         })
     state:string;
@@ -41,13 +40,13 @@ export class category {
 
 
    
-    @ManyToOne(type=>movement_type, movement_type=>movement_type.categorys,{ onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>movement_type, movement_type=>movement_type.categorys,{ onDelete: 'CASCADE',onUpdate: 'CASCADE' })
     @JoinColumn({ name:'fk_movement_type'})
     fkMovementType:movement_type | null;
 
 
    
-    @ManyToOne(type=>user, user=>user.categorys,{ onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>user, user=>user.categorys,{ onDelete: 'CASCADE',onUpdate: 'CASCADE' })
     @JoinColumn({ name:'fk_user'})
     fkUser:user | null;
 

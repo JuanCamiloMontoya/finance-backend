@@ -25,20 +25,20 @@ export class debtor {
     @Column("varchar",{ 
         nullable:false,
         length:10,
-        default: () => "'active'",
+        default: () => "'1'",
         name:"state"
         })
     state:string;
         
 
    
-    @ManyToOne(type=>user, user=>user.debtors,{  nullable:false,onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>user, user=>user.debtors,{  nullable:false,onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
     @JoinColumn({ name:'fk_user'})
     fkUser:user | null;
 
 
    
-    @OneToMany(type=>debt, debt=>debt.fkDebtor,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>debt, debt=>debt.fkDebtor,{ onDelete: 'NO ACTION' ,onUpdate: 'NO ACTION' })
     debts:debt[];
     
 }

@@ -43,7 +43,6 @@ export class movement {
     @Column("varchar",{ 
         nullable:false,
         length:10,
-        default: () => "'active'",
         name:"state"
         })
     state:string;
@@ -62,7 +61,7 @@ export class movement {
 
 
    
-    @ManyToOne(type=>debt, debt=>debt.movements,{ onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>debt, debt=>debt.movements,{ onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
     @JoinColumn({ name:'fk_debt'})
     fkDebt:debt | null;
 

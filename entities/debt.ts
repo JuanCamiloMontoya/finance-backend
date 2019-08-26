@@ -31,7 +31,8 @@ export class debt {
 
     @Column("decimal",{ 
         nullable:false,
-        scale:2,
+        default: () => "'0'",
+        scale:0,
         name:"value"
         })
     value:string;
@@ -40,20 +41,20 @@ export class debt {
     @Column("varchar",{ 
         nullable:false,
         length:10,
-        default: () => "'active'",
+        default: () => "'1'",
         name:"state"
         })
     state:string;
         
 
    
-    @ManyToOne(type=>debtor, debtor=>debtor.debts,{  nullable:false,onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>debtor, debtor=>debtor.debts,{  nullable:false,onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
     @JoinColumn({ name:'fk_debtor'})
     fkDebtor:debtor | null;
 
 
    
-    @OneToMany(type=>movement, movement=>movement.fkDebt,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>movement, movement=>movement.fkDebt,{ onDelete: 'NO ACTION' ,onUpdate: 'NO ACTION' })
     movements:movement[];
     
 }

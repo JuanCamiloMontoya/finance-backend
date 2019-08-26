@@ -41,17 +41,17 @@ export class user {
         
 
    
-    @OneToMany(type=>account, account=>account.fkUser,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>account, account=>account.fkUser,{ onDelete: 'NO ACTION' ,onUpdate: 'NO ACTION' })
     accounts:account[];
     
 
    
-    @OneToMany(type=>category, category=>category.fkUser,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>category, category=>category.fkUser,{ onDelete: 'CASCADE' ,onUpdate: 'CASCADE' })
     categorys:category[];
     
 
    
-    @OneToMany(type=>debtor, debtor=>debtor.fkUser,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>debtor, debtor=>debtor.fkUser,{ onDelete: 'NO ACTION' ,onUpdate: 'NO ACTION' })
     debtors:debtor[];
     
 }

@@ -8,6 +8,7 @@
     "password": "root",
     "database": "db_finance",
     "synchronize": true,
+    "logging": false,
     "entities": [
       "entities/*.ts"
     ]
