@@ -61,7 +61,7 @@ export class movement {
 
 
    
-    @ManyToOne(type=>debt, debt=>debt.movements,{ onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
+    @ManyToOne(type=>debt, debt=>debt.movements,{ onDelete: 'CASCADE',onUpdate: 'CASCADE' })
     @JoinColumn({ name:'fk_debt'})
     fkDebt:debt | null;
 

@@ -7,9 +7,8 @@ import {movement} from "./movement";
 @Index("fk_debt_debtor_1",["fkDebtor",])
 export class debt {
 
-    @Column("int",{ 
-        nullable:false,
-        primary:true,
+    @PrimaryGeneratedColumn({
+        type:"int", 
         name:"id"
         })
     id:number;
@@ -48,13 +47,13 @@ export class debt {
         
 
    
-    @ManyToOne(type=>debtor, debtor=>debtor.debts,{  nullable:false,onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
+    @ManyToOne(type=>debtor, debtor=>debtor.debts,{  nullable:false,onDelete: 'CASCADE',onUpdate: 'CASCADE' })
     @JoinColumn({ name:'fk_debtor'})
     fkDebtor:debtor | null;
 
 
    
-    @OneToMany(type=>movement, movement=>movement.fkDebt,{ onDelete: 'NO ACTION' ,onUpdate: 'NO ACTION' })
+    @OneToMany(type=>movement, movement=>movement.fkDebt,{ onDelete: 'CASCADE' ,onUpdate: 'CASCADE' })
     movements:movement[];
     
 }

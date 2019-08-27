@@ -13,51 +13,42 @@ import { AccountDto } from './dto/account.dto';
 export class AccountService {
 
     constructor(
-    
+
         @InjectRepository(account) private readonly accountRepository: Repository<account>,
         @InjectRepository(user) private readonly userRepository: Repository<user>
 
     ) { }
 
-     async createAccount(Account: AccountDto) {
-        let response;
+    async createAccount(body: AccountDto) {
         try {
             await getManager().transaction(async entityManager => {
-               
+                console.log(body);
                 await entityManager.save(
                     this.accountRepository.create({
-                        // "email": user.email,
-                        // "password": user.password,
-                        // "fkIdPerson": { id_person: newUser.id_person }
+                        "title": body.title,
+                        "initial_value": body.initial_values,
+                        "fkUser": { id: body.fkuser },
+                        "fkAccountType": { id: body.fktype }
                     }));
-
-                // response = { "code": "3", "message": `Éxito: ${newAccount.id_person}` };
             });
+            return { success: "OK" };
         } catch (error) {
-            response = { "code": "1", "message": `Error: ${error}` };
-        } finally {
-            return response;
+            return { error: 'TRANSACTION_ERROR', detail: error };
         }
     }
+
 
     async getAccountAll() {
         return await this.accountRepository.find();
     }
-    // { relations: ["fkPerson"] }
+ 
     async getAccountId(id: number) {
-        return await this.accountRepository.findOne({ id: id }, { relations: ["fkPerson"] });
+        return await this.accountRepository.findOne({ id: id }, { relations: ["fkUser"] });
     }
 
-    // async getAccountAll(id: number) {
-    //     return         await this.accountRepository
-    //     .createQueryBuilder("account")
-        
-        
-    
-    //     .where("account.fkIdPerson= :fk_id_persona", { fk_id_persona: id } )
-    
-    //    //la fk debe ser tal cual como esta en entities al lado donde se referencia
-    //      .execute();
-    //     return await this.accountRepository.findOneOrFail({ id_account: id }, { relations: ["fkPerson"] });
-    // }
+    async getAccountUpdate(id: number) {
+        return await this.accountRepository.findOne({ id: id }, { relations: ["fkUser"] });
+    }
+
+   
 }

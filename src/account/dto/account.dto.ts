@@ -1,11 +1,17 @@
-import { Length, IsEmail } from 'class-validator';
+import { Length, IsEmail, IsNumber } from 'class-validator';
 
 export class AccountDto {
-
-    @IsEmail() 
+ 
     @Length(4, 50) 
-    email: string;
+    title: string;
 
-    @Length(4, 50) 
-    password: string;
+    @IsNumber() 
+    initial_values: number;
+
+    @IsNumber() 
+    fkuser: number;
+
+    @IsNumber() 
+    fktype: number;
+
 }

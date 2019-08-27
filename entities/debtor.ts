@@ -7,9 +7,8 @@ import {debt} from "./debt";
 @Index("fk_debtor_user_1",["fkUser",])
 export class debtor {
 
-    @Column("int",{ 
-        nullable:false,
-        primary:true,
+    @PrimaryGeneratedColumn({
+        type:"int", 
         name:"id"
         })
     id:number;
@@ -32,13 +31,13 @@ export class debtor {
         
 
    
-    @ManyToOne(type=>user, user=>user.debtors,{  nullable:false,onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
+    @ManyToOne(type=>user, user=>user.debtors,{  nullable:false,onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
     @JoinColumn({ name:'fk_user'})
     fkUser:user | null;
 
 
    
-    @OneToMany(type=>debt, debt=>debt.fkDebtor,{ onDelete: 'NO ACTION' ,onUpdate: 'NO ACTION' })
+    @OneToMany(type=>debt, debt=>debt.fkDebtor,{ onDelete: 'CASCADE' ,onUpdate: 'CASCADE' })
     debts:debt[];
     
 }

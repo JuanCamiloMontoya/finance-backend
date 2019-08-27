@@ -57,7 +57,7 @@ export class MovementService {
          .getMany();
          //.execute();
     /* */
-     
+      
     
       }
 
@@ -93,12 +93,12 @@ export class MovementService {
       async GetMovementRevenue(UserId){
         return await this.userRepository
         .createQueryBuilder("user1")
-        .select("movement.id_movement", "id")
-        .addSelect("movement.mo_value", "valor")
-        .addSelect("movement.mo_date", "fecha")
-        .addSelect("movement.mo_description", "description")
-        .addSelect("category.ca_name", "Category_name")
-        .addSelect("cuenta.acc_title", "cuenta")
+        .select("movement.id", "id")
+        .addSelect("movement.value", "valor")
+        .addSelect("movement.date", "fecha")
+        .addSelect("movement.description", "description")
+        .addSelect("category.name", "Category_name")
+        .addSelect("cuenta.title", "cuenta")
         
      // .subQuery  
         .innerJoin("account", "cuenta", "cuenta.fk_id_person = user1.id_user")
