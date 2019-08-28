@@ -62,7 +62,7 @@ export class CategoryService {
             .addSelect("GROUP_CONCAT(cat.name)", "subcategory")
             .addSelect("category.state")
             .addSelect("cat.fk_category")
-            .innerJoin("category", "cat", "cat.fk_category = category.id")
+            .innerJoin("category.categorys", "cat")
             .groupBy("category.id")
             .orderBy("category.id", "ASC")
             .getMany();
@@ -83,14 +83,15 @@ export class CategoryService {
 
     }
 
-    async UpdateSubcategory(body: CategoryUpdateDto) {
+    async UpdateCategory(body: CategoryUpdateDto) {
         return await this.categoryRepository
             .createQueryBuilder()
             .update(category)
             .set({
-                name: body.newName
+                name: body.newName,
+                state: body.state
             })
-            .where("fkCategory = :idFkCat ", { idFkCat: body.idSubCategory })
+            .where("id = :idCat ", { idCat: body.idCategory })
             .execute();
     }
 
