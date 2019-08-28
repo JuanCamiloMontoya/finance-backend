@@ -28,7 +28,7 @@ export class category {
     @Column("varchar",{ 
         nullable:false,
         length:10,
-        default: () => "'active'",
+        default: () => "'1'",
         name:"state"
         })
     state:string;
