@@ -1,8 +1,4 @@
 import { Length, IsString, IsNumber } from 'class-validator';
-import { category } from '../../../entities/category';
-import { movement_type } from '../../../entities/movement_type';
-import { user } from '../../../entities/user';
-import { isNull } from 'util';
 
 export class CategoryInsertDto {
   
@@ -11,11 +7,11 @@ export class CategoryInsertDto {
     name: string;
 
     @IsNumber()
-    fkCategory: category;
+    fkCategory: number;
     
     @IsNumber()
-    fkMovementType: movement_type;
+    fkMovementType: number;
    
     @IsNumber()
-    fkUser: user;
+    fkUser: number;
 }

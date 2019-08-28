@@ -94,15 +94,15 @@ export class CategoryService {
             .execute();
     }
 
-    async createCategory(body: CategoryInsertDto) {
+    async createCategoryFull(body: CategoryInsertDto) {
         try {
             await getManager().transaction(async entityManager => {
                 await entityManager.save(
                     this.categoryRepository.create({
                         "name": body.name,
-                        "fkCategory": { id: body.fkCategory.id },
-                        "fkMovementType": { id: body.fkMovementType.id },
-                        "fkUser": { id: body.fkUser.id }
+                        "fkCategory": { id: body.fkCategory },
+                        "fkMovementType": { id: body.fkMovementType },
+                        "fkUser": { id: body.fkUser }
                     }));
             });
             return { success: "OK" };
@@ -110,5 +110,37 @@ export class CategoryService {
             return { error: 'TRANSACTION_ERROR', detail: error };
         }
     }
+    async createNameCategory(body: CategoryInsertDto) {
+        try {
+            await getManager().transaction(async entityManager => {
+                await entityManager.save(
+                    this.categoryRepository.create({
+                        "name": body.name,
+                        "fkMovementType": { id: body.fkMovementType },
+                    }));
+            });
+            return { success: "OK" };
+        } catch (error) {
+            return { error: 'TRANSACTION_ERROR', detail: error };
+        }
+    }
+
+    async createSubCategory(body: CategoryInsertDto) {
+        try {
+            await getManager().transaction(async entityManager => {
+                await entityManager.save(
+                    this.categoryRepository.create({
+                        "name": body.name,
+                        "fkCategory": { id: body.fkCategory },
+                        "fkMovementType": { id: body.fkMovementType },
+                    }));
+            });
+            return { success: "OK" };
+        } catch (error) {
+            return { error: 'TRANSACTION_ERROR', detail: error };
+        }
+    }
+
+
 
 }
