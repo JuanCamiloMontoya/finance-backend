@@ -5,9 +5,9 @@ import { Repository, getManager } from 'typeorm';
 import { user } from '../../entities/user';
 
 import { account } from '../../entities/account';
+import { AccountUpdateDto } from './dto/accountUpdate.dto';
 
-
-import { AccountDto } from './dto/account.dto';
+import { AccountCreateDto } from './dto/accountCreate.dto';
 
 @Injectable()
 export class AccountService {
@@ -19,7 +19,7 @@ export class AccountService {
 
     ) { }
 
-    async createAccount(body: AccountDto) {
+    async createAccount(body: AccountCreateDto) {
         try {
             await getManager().transaction(async entityManager => {
                 console.log(body);
@@ -46,9 +46,46 @@ export class AccountService {
         return await this.accountRepository.findOne({ id: id }, { relations: ["fkUser"] });
     }
 
-    async getAccountUpdate(id: number) {
-        return await this.accountRepository.findOne({ id: id }, { relations: ["fkUser"] });
+    async UpdateAccount(account: AccountUpdateDto) {
+       
+            try {
+                await this.accountRepository.update(
+                    account.id,
+                    { 
+                        title: account.title,
+                        initial_value: account.values,
+                        "fkUser": { id: account.fkuser },
+                        "fkAccountType": { id: account.fktype } 
+                     }
+                    );
+                return { success: "OK" };
+            } catch (error) {
+                return { error: 'TRANSACTION_ERROR', detail: error };
+            }
+        
     }
 
+    async UpdateAccountByMovement(account: AccountUpdateDto) {
+       
+        try {
+            await this.accountRepository.update(
+                account.id,
+                { 
+                    title: account.title,
+                    initial_value: account.values,
+                    "fkUser": { id: account.fkuser },
+                    "fkAccountType": { id: account.fktype } 
+                 }
+                );
+            return { success: "OK" };
+        } catch (error) {
+            return { error: 'TRANSACTION_ERROR', detail: error };
+        }
+    
+}
+
    
+
+
+    
 }

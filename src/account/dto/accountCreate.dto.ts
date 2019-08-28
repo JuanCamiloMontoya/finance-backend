@@ -1,6 +1,6 @@
 import { Length, IsEmail, IsNumber } from 'class-validator';
 
-export class AccountDto {
+export class AccountCreateDto {
  
     @Length(4, 50) 
     title: string;

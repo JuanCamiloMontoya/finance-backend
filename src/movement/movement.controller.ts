@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import {  Get, UseGuards, Req, SetMetadata, Param ,Post,Body} from '@nestjs/common';
 import { MovementService } from './movement.service';
-import {MovementDto} from './dto/movement.dto';
+import {MovementCreateDto} from './dto/movementCreate.dto';
 
 @Controller('movement')
 export class MovementController {
@@ -10,9 +10,10 @@ export class MovementController {
 
 
     @Post('create')
-    async createMovement(@Body() body: MovementDto){{
-     // const response = await this.movementService.createMovement(body);
-      //  return response;
+    async createMovement(@Body() body: MovementCreateDto){{
+      const response = await this.movementService.createMovement(body);
+      console.log(response);
+        return response;
     }}
     
 
@@ -30,16 +31,22 @@ export class MovementController {
         return response;
     }}
 
-    @Get('-/:UserId')
-    async GetMovementGastos(@Param('UserId') UserId){
-      console.log(UserId)
-      return this.movementService.GetMovementGasto(UserId);
+    // @Get('expense/:UserId')
+    // async GetMovementExpense(@Param('UserId') UserId){
+    //   // console.log(UserId)
+    //   return this.movementService.GetMovementExpense(UserId);
+    // }
+
+    @Get('type/:UserId/:typeId')
+    async GetMovementType(@Param('UserId') UserId,@Param('typeId') typeId){
+     
+      return await this.movementService.GetMovementType(UserId,typeId);
     }
 
-    @Get('revenue/:UserId')
-    async GetMovementRevenue(@Param('UserId') UserId){
-      console.log(UserId)
-      return this.movementService.GetMovementRevenue(UserId);
-    }
+    // @Get('type/:UserId')
+    // async GetMovementType(@Param('UserId') UserId){
+    //   console.log(UserId)
+    //   return this.movementService.GetMovementRevenue(UserId);
+    // }
   
 }

@@ -1,115 +1,130 @@
 import { Injectable } from '@nestjs/common';
 
-import { movement } from '../../entities/movement'; 
+import { movement } from '../../entities/movement';
 import { user } from '../../entities/user';
+import { account } from '../../entities/account';
+import { category } from '../../entities/category';
 import { Repository, getManager } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import {MovementDto} from './dto/movement.dto';
+import { MovementCreateDto } from './dto/movementCreate.dto';
+import { AccountService } from '../account/account.service'
+
+import { MovementUpdateDto } from './dto/movementUpdate.dto';
 
 @Injectable()
 export class MovementService {
 
 
-    constructor(
-       // @InjectRepository(person) private readonly personRepository: Repository<person>,
-        @InjectRepository(user) private readonly userRepository: Repository<user>,
-        @InjectRepository(movement) private readonly movementRepository: Repository<movement>
-        
-    ) { }
+  constructor(
+    // private readonly accountService: AccountService,
+
+    @InjectRepository(category) private readonly categoryRepository: Repository<category>,
+    @InjectRepository(account) private readonly accountRepository: Repository<account>,
+    @InjectRepository(user) private readonly userRepository: Repository<user>,
+
+    @InjectRepository(movement) private readonly movementRepository: Repository<movement>
+
+  ) { }
 
 
 
-   
-  //  async createMovement(movement: MovementDto){
-  //   let response;
-  //   try {
-  //       await getManager().transaction(async entityManager => {
-            
 
-  //           await entityManager.save(
-  //               this.movementRepository.create({
-  //                    "":,
-  //                   "password": movement.password
-                    
-  //               }));
+  async GetMovement(UserId) {
 
-  //           response = { "code": "3", "message": `Éxito: ${movement.}` };
-  //       });
-  //   } catch (error) {
-  //       response = { "code": "1", "message": `Error: ${error}` };
-  //   } finally {
-  //       return response;
-  //   }
+    return await this.movementRepository
+      .createQueryBuilder("movement")
+      .addSelect("account.title")
 
-  //  }
+      .innerJoin("account", "account", "movement.fk_account = account.id")
 
-    async GetMovement(UserId){
-       
-        return         await this.movementRepository
-        .createQueryBuilder("movement")
-        .addSelect("account.title")
-        
-        .innerJoin("account","account","movement.fk_account = account.id") 
-    
-        .where("account.fk_user= :id", { id : UserId } )
-    
-       //la fk debe ser tal cual como esta en entities al lado donde se referencia
-         .getMany();
-         //.execute();
+      .where("account.fk_user= :id", { id: UserId })
+
+      //la fk debe ser tal cual como esta en entities al lado donde se referencia
+      .getMany();
+    //.execute();
     /* */
-      
+
+
+  }
+
+
+  async getMovementAll() {
+    return await this.movementRepository.find();
+  }
+
+
+
+  async GetMovementType(UserId, typeId) {
+    return await this.userRepository
+      .createQueryBuilder("user")
+      .select("movement.id", "id")
+      .addSelect("movement.value", "valor")
+      .addSelect("movement.date", "date")
+      .addSelect("movement.description", "description")
+      .addSelect("category.name", "category")
+      .addSelect("account.title", "account")      
+      .innerJoin("account", "account", "account.fk_user = user.id")
+      .innerJoin("movement", "movement", "movement.fk_account = account.id")
+      .innerJoin("category", "category", "category.id = movement.fk_category")
+      .innerJoin("movement_type", "movement_type", "movement_type.id = category.fk_movement_type")
+      .where("user.id = :user_id", { user_id: UserId })
+      .andWhere("category.fk_movement_type= :type", { type: typeId })
     
+      .execute();
+  }
+
+
+
+  async createMovement(Movement: MovementCreateDto) {
+    try {
+      await getManager().transaction(async entityManager => {
+        await entityManager.save(
+          this.movementRepository.create({
+            "fkAccount": { id: Movement.account },
+            "fkCategory": { id: Movement.category },
+            "fkDebt": { id: Movement.debt },
+            "value": Movement.value,
+            "description": Movement.description,
+            "state": Movement.state,
+
+          }));
+      });
+
+      let type2 = await this.categoryRepository.createQueryBuilder("category").where("category.id= :id", { id: Movement.category }).execute();
+      let aux = await this.accountRepository.findOne({ id: Movement.account})    
+
+      if (type2.fkMovementType = 1) {
+        const aux2=aux.initial_value-Movement.value;        
+        // await this.accountRepository.createQueryBuilder()
+        //   .update(account)
+        //   .set({            
+        //     initial_value: () => "initial_value - Movement.value"
+        //   })
+        //   .where("id = :id", { id: Movement.account })
+        //   .execute();
+        await this.accountRepository.update(
+          Movement.account,
+          {
+             initial_value:aux2 ,
+          }
+        );
+
+      } else {
+        const aux2=aux.initial_value+Movement.value;
+        await this.accountRepository.update(        
+          Movement.account,
+          {
+             initial_value:aux2 ,
+          }
+        );
       }
-
-
-      async getMovementAll() {
-        return await this.movementRepository.find();
+      return { success: "OK" };
+    } catch (error) {
+      return { error: 'TRANSACTION_ERROR', detail: error };
     }
+  }
 
-      async GetMovementGasto(UserId){
-        
-        return await this.userRepository
-        .createQueryBuilder("user1")
-        .select("movement.id_movement", "id")
-        .addSelect("movement.mo_value", "valor")
-        .addSelect("movement.mo_date", "fecha")
-        .addSelect("movement.mo_description", "description")
-        .addSelect("category.ca_name", "Category_name")
-        .addSelect("cuenta.acc_title", "cuenta")
-        
-     // .subQuery  
-        .innerJoin("account", "cuenta", "cuenta.fk_id_person = user1.id_user")
-        .innerJoin("movement","movement","movement.fk_id_account = cuenta.id_account") 
-        .innerJoin("movement_type", "movement_type", "movement_type.id_type_movement = movement.fk_type_movem")
-        .innerJoin("category", "category", "category.id_category = movement.fk_id_category")
-        .where("user1.id_user = :user1_id", { id_user: UserId } )
-        .andWhere("movement_type.mt_name= :type", { type: "Gastos" } )
-       
-         .execute();
-    /* */
-     
-      }
 
-      async GetMovementRevenue(UserId){
-        return await this.userRepository
-        .createQueryBuilder("user1")
-        .select("movement.id", "id")
-        .addSelect("movement.value", "valor")
-        .addSelect("movement.date", "fecha")
-        .addSelect("movement.description", "description")
-        .addSelect("category.name", "Category_name")
-        .addSelect("cuenta.title", "cuenta")
-        
-     // .subQuery  
-        .innerJoin("account", "cuenta", "cuenta.fk_id_person = user1.id_user")
-        .innerJoin("movement","movement","movement.fk_id_account = cuenta.id_account") 
-        .innerJoin("movement_type", "movement_type", "movement_type.id_type_movement = movement.fk_type_movem")
-        .innerJoin("category", "category", "category.id_category = movement.fk_id_category")
-        .where("user1.id_user = :user1_id", { user1_id: UserId } )
-        .andWhere("movement_type.mt_name= :type", { type: "Ingresos" } )
-       
-         .execute();
-    /* */
-     
-      }
+
+
 }
