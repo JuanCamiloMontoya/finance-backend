@@ -7,24 +7,25 @@ import {movement} from "./movement";
 @Index("fk_debt_debtor_1",["fkDebtor",])
 export class debt {
 
-    @Column("int",{ 
-        nullable:false,
-        primary:true,
-        name:"id"
-        })
-    id:number;
+    @PrimaryGeneratedColumn({
+        type: "int",
+        name: "id"
+    })
+    id: number;
         
 
     @Column("varchar",{ 
         nullable:false,
-        name:"desciption"
+        length: 300,
+        name:"description"
         })
-    desciption:string;
+    description:string;
         
 
-    @Column("date",{ 
+    @Column("timestamp",{ 
         nullable:false,
-        name:"date"
+        name:"date",
+        default: () => "CURRENT_TIMESTAMP"
         })
     date:string;
         
