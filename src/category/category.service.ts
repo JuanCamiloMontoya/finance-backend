@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { category } from '../../entities/category';
-import { Repository, IsNull } from 'typeorm';
-import { CategoryDto } from './dto/category.dto';
- 
+import { Repository, IsNull, getManager } from 'typeorm';
+import { CategoryUpdateDto } from './dto/categoryUpdate.dto';
+import { CategoryInsertDto } from './dto/categoryInsert.dto';
+
 @Injectable()
 export class CategoryService {
 
@@ -56,18 +57,33 @@ export class CategoryService {
     //retorna todas las categorias con la subcategoria
     async getAllCategorySubCategory() {
         return await this.categoryRepository
-            .createQueryBuilder()
-            .select("ca.name", "General category")
+            .createQueryBuilder("category")
+            .select("category.name")
             .addSelect("GROUP_CONCAT(cat.name)", "subcategory")
-            .addSelect("ca.state ")
-            .addFrom("category", "ca")
-            .innerJoin("category", "cat", "cat.fk_category = ca.id")
-            .groupBy("ca.id")
-            .orderBy("ca.id", "ASC")
+            .addSelect("category.state")
+            .addSelect("cat.fk_category")
+            .innerJoin("category", "cat", "cat.fk_category = category.id")
+            .groupBy("category.id")
+            .orderBy("category.id", "ASC")
             .getMany();
     }
 
-    async UpdateSubcategory(body: CategoryDto ) {
+    //retorna todas las categorias con la subcategoria2
+    async getAllCategorySubCategory2() {
+        return await this.categoryRepository.find({
+            select: ["name", "state"],
+            join: {
+                alias: "categor",
+                innerJoinAndSelect: {
+                    fkCategory: "categor.id",
+                    select: "categor.name",
+                }
+            }
+        });
+
+    }
+
+    async UpdateSubcategory(body: CategoryUpdateDto) {
         return await this.categoryRepository
             .createQueryBuilder()
             .update(category)
@@ -76,6 +92,23 @@ export class CategoryService {
             })
             .where("fkCategory = :idFkCat ", { idFkCat: body.idSubCategory })
             .execute();
+    }
+
+    async createCategory(body: CategoryInsertDto) {
+        try {
+            await getManager().transaction(async entityManager => {
+                await entityManager.save(
+                    this.categoryRepository.create({
+                        "name": body.name,
+                        "fkCategory": { id: body.fkCategory.id },
+                        "fkMovementType": { id: body.fkMovementType.id },
+                        "fkUser": { id: body.fkUser.id }
+                    }));
+            });
+            return { success: "OK" };
+        } catch (error) {
+            return { error: 'TRANSACTION_ERROR', detail: error };
+        }
     }
 
 }

@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, BadGatewayException } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { CategoryDto } from './dto/category.dto';
+import { CategoryUpdateDto } from './dto/categoryUpdate.dto';
+import { CategoryInsertDto } from './dto/categoryInsert.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -26,10 +27,22 @@ export class CategoryController {
     async getAllCategorySubCategory() {
         return this.categoryService.getAllCategorySubCategory();
     }
+    @Get('/subcategory2')
+    async getAllCategorySubCategory2() {
+        return this.categoryService.getAllCategorySubCategory2();
+    }
 
     @Post('Update/Subcategory')
-    async UpdateSubCategory(@Body() body: CategoryDto) {
+    async UpdateSubCategory(@Body() body: CategoryUpdateDto) {
         return this.categoryService.UpdateSubcategory(body);
+    }
+
+    @Post('create')
+    async createCategorty(@Body() body: CategoryInsertDto) {
+      const response: any = await this.categoryService.createCategory(body);
+      if (response.success)
+        return response;
+      throw new BadGatewayException(response)
     }
 
 }
