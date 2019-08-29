@@ -59,29 +59,13 @@ export class CategoryService {
         return await this.categoryRepository
             .createQueryBuilder("category")
             .select("category.name")
-            .addSelect("GROUP_CONCAT(cat.name)", "subcategory")
             .addSelect("category.state")
-            .addSelect("cat.fk_category")
-            .innerJoin("category.categorys", "cat")
-            .groupBy("category.id")
+            .innerJoinAndSelect("category.categorys", "cat")
+            .addSelect("category.name", "subcategory")
             .orderBy("category.id", "ASC")
             .getMany();
     }
 
-    //retorna todas las categorias con la subcategoria2
-    async getAllCategorySubCategory2() {
-        return await this.categoryRepository.find({
-            select: ["name", "state"],
-            join: {
-                alias: "categor",
-                innerJoinAndSelect: {
-                    fkCategory: "categor.id",
-                    select: "categor.name",
-                }
-            }
-        });
-
-    }
 
     async UpdateCategory(body: CategoryUpdateDto) {
         return await this.categoryRepository
