@@ -27,10 +27,6 @@ export class CategoryController {
     async getAllCategorySubCategory() {
         return this.categoryService.getAllCategorySubCategory();
     }
-    @Get('/subcategory2')
-    async getAllCategorySubCategory2() {
-        return this.categoryService.getAllCategorySubCategory2();
-    }
 
     @Put('update-category')
     async UpdateCategory(@Body() body: CategoryUpdateDto) {
