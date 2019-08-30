@@ -123,6 +123,19 @@ export class MovementService {
       return { error: 'TRANSACTION_ERROR', detail: error };
     }
   }
+  async DeleteAccount(AunconId) {
+       
+    try {
+        await this.accountRepository.delete(
+          AunconId,
+           
+            );
+        return { success: "OK" };
+    } catch (error) {
+        return { error: 'TRANSACTION_ERROR', detail: error };
+    }
+
+}
 
 
 

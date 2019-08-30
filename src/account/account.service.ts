@@ -65,17 +65,12 @@ export class AccountService {
         
     }
 
-    async UpdateAccountByMovement(account: AccountUpdateDto) {
+    async DeleteAccount(account) {
        
         try {
-            await this.accountRepository.update(
-                account.id,
-                { 
-                    title: account.title,
-                    initial_value: account.values,
-                    "fkUser": { id: account.fkuser },
-                    "fkAccountType": { id: account.fktype } 
-                 }
+            await this.accountRepository.delete(
+                account,
+               
                 );
             return { success: "OK" };
         } catch (error) {
@@ -83,6 +78,26 @@ export class AccountService {
         }
     
 }
+//     async UpdateAccountByMovement(account: AccountUpdateDto) {
+       
+//         try {
+//             await this.accountRepository.update(
+//                 account.id,
+//                 { 
+//                     title: account.title,
+//                     initial_value: account.values,
+//                     "fkUser": { id: account.fkuser },
+//                     "fkAccountType": { id: account.fktype } 
+//                  }
+//                 );
+//             return { success: "OK" };
+//         } catch (error) {
+//             return { error: 'TRANSACTION_ERROR', detail: error };
+//         }
+    
+// }
+
+
 
    
 

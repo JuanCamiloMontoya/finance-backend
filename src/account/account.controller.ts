@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param,HttpException, HttpStatus, UnauthorizedException,BadGatewayException,Put  } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param,Delete,HttpException, HttpStatus, UnauthorizedException,BadGatewayException,Put  } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccountCreateDto } from './dto/accountCreate.dto';
 import { AccountService } from './account.service';
@@ -11,14 +11,11 @@ export class AccountController {
     constructor(        private readonly accountService: AccountService    ) { }
 
     @Post('create')
-    async login(@Body() body: AccountCreateDto) {
+    async createAccount(@Body() body: AccountCreateDto) {
         const response = await this.accountService.createAccount(body);
         
         
-        // if (response)
-        //     return { payload: this.jwtService.sign({ ...response }) }
-            
-        // throw new UnauthorizedException({ error: "USER_NOT_EXIST", detail: "El usuario no existe" });
+     
     }
 
     @Get('getAll')
@@ -39,5 +36,11 @@ export class AccountController {
         throw new BadGatewayException(response)
     }}
 
+
+    @Delete('delete/:AccountId')
+    async DeleteAccountId(@Param('AccountId') AccountId){         
+    
+        return  await this.accountService.DeleteAccount(AccountId);
+    }
 
 }
