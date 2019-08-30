@@ -13,12 +13,12 @@ export class CategoryController {
         return this.categoryService.getAllCategory();
     }
 
-    @Get('/all/Income')
+    @Get('/all-income')
     async getAllCategoryIncome() {
         return this.categoryService.getAllCategoryIncome();
     }
 
-    @Get('/all/Expense')
+    @Get('/all-expense')
     async getAllCategoryExpense() {
         return this.categoryService.getAllCategoryExpense();
     }
@@ -27,17 +27,13 @@ export class CategoryController {
     async getAllCategorySubCategory() {
         return this.categoryService.getAllCategorySubCategory();
     }
-    @Get('/subcategory2')
-    async getAllCategorySubCategory2() {
-        return this.categoryService.getAllCategorySubCategory2();
+
+    @Put('update-category')
+    async UpdateCategory(@Body() body: CategoryUpdateDto) {
+        return this.categoryService.UpdateCategory(body);
     }
 
-    @Put('Update/Subcategory')
-    async UpdateSubCategory(@Body() body: CategoryUpdateDto) {
-        return this.categoryService.UpdateSubcategory(body);
-    }
-
-    @Post('create/Full')
+    @Post('create-full')
     async createCategortyFull(@Body() body: CategoryInsertDto) {
       const response: any = await this.categoryService.createCategoryFull(body);
       if (response.success)
@@ -45,7 +41,7 @@ export class CategoryController {
       throw new BadGatewayException(response)
     }
 
-    @Post('create/TypeCategory')
+    @Post('create-typecategory')
     async createCategorty(@Body() body: CategoryInsertDto) {
       const response: any = await this.categoryService.createNameCategory(body);
       if (response.success)
@@ -53,7 +49,7 @@ export class CategoryController {
       throw new BadGatewayException(response)
     }
 
-    @Post('create/SubCategory')
+    @Post('create-subcategory')
     async createSubCategorty(@Body() body: CategoryInsertDto) {
       const response: any = await this.categoryService.createSubCategory(body);
       if (response.success)

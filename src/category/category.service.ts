@@ -59,38 +59,23 @@ export class CategoryService {
         return await this.categoryRepository
             .createQueryBuilder("category")
             .select("category.name")
-            .addSelect("GROUP_CONCAT(cat.name)", "subcategory")
             .addSelect("category.state")
-            .addSelect("cat.fk_category")
-            .innerJoin("category", "cat", "cat.fk_category = category.id")
-            .groupBy("category.id")
+            .innerJoinAndSelect("category.categorys", "cat")
+            .addSelect("category.name", "subcategory")
             .orderBy("category.id", "ASC")
             .getMany();
     }
 
-    //retorna todas las categorias con la subcategoria2
-    async getAllCategorySubCategory2() {
-        return await this.categoryRepository.find({
-            select: ["name", "state"],
-            join: {
-                alias: "categor",
-                innerJoinAndSelect: {
-                    fkCategory: "categor.id",
-                    select: "categor.name",
-                }
-            }
-        });
 
-    }
-
-    async UpdateSubcategory(body: CategoryUpdateDto) {
+    async UpdateCategory(body: CategoryUpdateDto) {
         return await this.categoryRepository
             .createQueryBuilder()
             .update(category)
             .set({
-                name: body.newName
+                name: body.newName,
+                state: body.state
             })
-            .where("fkCategory = :idFkCat ", { idFkCat: body.idSubCategory })
+            .where("id = :idCat ", { idCat: body.idCategory })
             .execute();
     }
 
