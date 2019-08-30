@@ -8,31 +8,30 @@ import {movement} from "./movement";
 export class debt {
 
     @PrimaryGeneratedColumn({
-        type: "int",
-        name: "id"
-    })
-    id: number;
+        type:"int", 
+        name:"id"
+        })
+    id:number;
         
 
     @Column("varchar",{ 
         nullable:false,
-        length: 300,
-        name:"description"
+        name:"desciption"
         })
-    description:string;
+    desciption:string;
         
 
-    @Column("timestamp",{ 
+    @Column("date",{ 
         nullable:false,
-        name:"date",
-        default: () => "CURRENT_TIMESTAMP"
+        name:"date"
         })
     date:string;
         
 
     @Column("decimal",{ 
         nullable:false,
-        scale:2,
+        default: () => "'0'",
+        scale:0,
         name:"value"
         })
     value:string;
@@ -41,20 +40,20 @@ export class debt {
     @Column("varchar",{ 
         nullable:false,
         length:10,
-        default: () => "'active'",
+        default: () => "'1'",
         name:"state"
         })
     state:string;
         
 
    
-    @ManyToOne(type=>debtor, debtor=>debtor.debts,{  nullable:false,onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>debtor, debtor=>debtor.debts,{  nullable:false,onDelete: 'CASCADE',onUpdate: 'CASCADE' })
     @JoinColumn({ name:'fk_debtor'})
     fkDebtor:debtor | null;
 
 
    
-    @OneToMany(type=>movement, movement=>movement.fkDebt,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>movement, movement=>movement.fkDebt,{ onDelete: 'CASCADE' ,onUpdate: 'CASCADE' })
     movements:movement[];
     
 }

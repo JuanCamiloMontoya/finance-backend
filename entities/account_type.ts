@@ -22,8 +22,7 @@ export class account_type {
 
     @Column("varchar",{ 
         nullable:false,
-        length:10,
-        default: () => "'active'",
+        length:1,
         name:"state"
         })
     state:string;

@@ -21,16 +21,15 @@ export class movement_type {
         
 
     @Column("varchar",{ 
-        nullable:false,
-        length:10,
-        default: () => "'active'",
+        nullable:true,
+        length:1,
         name:"state"
         })
-    state:string;
+    state:string | null;
         
 
    
-    @OneToMany(type=>category, category=>category.fkMovementType,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>category, category=>category.fkMovementType,{ onDelete: 'CASCADE' ,onUpdate: 'CASCADE' })
     categorys:category[];
     
 }

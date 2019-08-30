@@ -46,7 +46,7 @@ export class user {
     
 
    
-    @OneToMany(type=>category, category=>category.fkUser,{ onDelete: 'RESTRICT' ,onUpdate: 'RESTRICT' })
+    @OneToMany(type=>category, category=>category.fkUser,{ onDelete: 'CASCADE' ,onUpdate: 'CASCADE' })
     categorys:category[];
     
 
