@@ -13,55 +13,22 @@ export class CategoryService {
         private readonly categoryRepository: Repository<category>,
     ) { }
 
-    //retorna todas las categorias 
-    async getAllCategory() {
+    async getCategoryByType(type) {
+        const customWhere = type != 'all'? { fkMovementType: type == 'income'? 2: 1 }: {}
         return await this.categoryRepository.find({
-            select: ["name"],
-            where: {
-                fkCategory: IsNull()
-            },
-            order: {
-                id: "ASC"
-            }
+            select: ["id","name"],
+            where: { fkCategory: IsNull(), ...customWhere },
+            order: { id: "ASC" }
         })
     }
 
-    //retorna todas las categorias para el ingreso
-    async getAllCategoryIncome() {
-        return await this.categoryRepository.find({
-            select: ["name"],
-            where: {
-                fkCategory: IsNull(),
-                fkMovementType: 2
-            },
-            order: {
-                id: "ASC"
-            }
-        })
-    }
 
-    //retorna todas las categorias para el gasto
-    async getAllCategoryExpense() {
-        return await this.categoryRepository.find({
-            select: ["name"],
-            where: {
-                fkCategory: IsNull(),
-                fkMovementType: 1
-            },
-            order: {
-                id: "ASC"
-            }
-        })
-    }
-
-    //retorna todas las categorias con la subcategoria
     async getAllCategorySubCategory() {
         return await this.categoryRepository
             .createQueryBuilder("category")
-            .select("category.name")
-            .addSelect("category.state")
-            .innerJoinAndSelect("category.categorys", "cat")
-            .addSelect("category.name", "subcategory")
+            .select(["category.name", "category.id"])
+            .addSelect(["cat.id", "cat.name"])
+            .innerJoin("category.categorys", "cat")
             .orderBy("category.id", "ASC")
             .getMany();
     }
@@ -71,15 +38,12 @@ export class CategoryService {
         return await this.categoryRepository
             .createQueryBuilder()
             .update(category)
-            .set({
-                name: body.newName,
-                state: body.state
-            })
-            .where("id = :idCat ", { idCat: body.idCategory })
+            .set(body)
+            .where("id = :id", body)
             .execute();
     }
-
-    async createCategoryFull(body: CategoryInsertDto) {
+ 
+    async createCategoryUser(body: CategoryInsertDto) {
         try {
             await getManager().transaction(async entityManager => {
                 await entityManager.save(
