@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, BadGatewayException, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, BadGatewayException, Put, Param } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CategoryUpdateDto } from './dto/categoryUpdate.dto';
 import { CategoryInsertDto } from './dto/categoryInsert.dto';
@@ -8,34 +8,24 @@ export class CategoryController {
 
     constructor(private readonly categoryService: CategoryService) { }
 
-    @Get('/all')
-    async getAllCategory() {
-        return this.categoryService.getAllCategory();
-    }
-
-    @Get('/all-income')
-    async getAllCategoryIncome() {
-        return this.categoryService.getAllCategoryIncome();
-    }
-
-    @Get('/all-expense')
-    async getAllCategoryExpense() {
-        return this.categoryService.getAllCategoryExpense();
+    @Get('/get/:type')
+    async getAllCategory(@Param('type') type) {
+        return await this.categoryService.getCategoryByType(type);
     }
 
     @Get('/subcategory')
     async getAllCategorySubCategory() {
-        return this.categoryService.getAllCategorySubCategory();
+        return await this.categoryService.getAllCategorySubCategory();
     }
 
-    @Put('update-category')
+    @Put('update')
     async UpdateCategory(@Body() body: CategoryUpdateDto) {
-        return this.categoryService.UpdateCategory(body);
+        return await this.categoryService.UpdateCategory(body);
     }
 
-    @Post('create-full')
-    async createCategortyFull(@Body() body: CategoryInsertDto) {
-      const response: any = await this.categoryService.createCategoryFull(body);
+    @Post('user/create')
+    async createCategortyUser(@Body() body: CategoryInsertDto) {
+      const response: any = await this.categoryService.createCategoryUser(body);
       if (response.success)
         return response;
       throw new BadGatewayException(response)

@@ -2,14 +2,11 @@ import { Length, IsString, IsNumber } from 'class-validator';
 
 export class CategoryUpdateDto {
     @IsNumber()
-    idCategory: number;
-
-    @IsNumber()
-    FKidCategory: number;
+    id: number;
 
     @IsString() 
     @Length(3, 50) 
-    newName: string;
+    name: string;
 
     @IsString() 
     @Length(3, 50) 
