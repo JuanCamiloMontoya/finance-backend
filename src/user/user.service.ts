@@ -30,14 +30,14 @@ export class UserService {
         }
     }
 
-    async getUserAll() {
-        return await this.userRepository.find();
+    async getUser(type) {
+        const customWhere = type != 'all'? { id: type }: {}
+        return await this.userRepository.find({
+            select: ["id","name","email"],
+            where: { ...customWhere },
+            order: { id: "ASC" }
+        })
     }
-
-    async getUserId(id: number) {
-        return await this.userRepository.findOne({ id: id });
-    }
-
 
     async updateUser(userToUpdate: UserDtoUpdate) {
         try {

@@ -1,7 +1,7 @@
 import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, Put, BadGatewayException } from '@nestjs/common';
 import { UserService } from './user.service';
 
-import { UserDtoCreate } from './dto/userCreate.Dto';
+import { UserDtoCreate } from './dto/userCreate.dto';
 import { UserDtoUpdate } from './dto/userUpdate.dto';
 
 @Controller('user')
@@ -16,14 +16,9 @@ export class UserController {
     throw new BadGatewayException(response)
   }
 
-  @Get('get-all')
-  async getUserAll() {
-    return await this.userService.getUserAll();
-  }
-
-  @Get('get-id/:id')
-  async getUserId(@Param('id') id: number) {
-    return await this.userService.getUserId(id);
+  @Get('get/:type') 
+  async getUserAll(@Param('type') type) {
+    return await this.userService.getUser(type);
   }
 
   @Put('update')
