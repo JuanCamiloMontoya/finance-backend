@@ -65,7 +65,7 @@ export class AccountService {
         
     }
 
-    async DeleteAccount(account) {
+    async deleteAccount(account) {
        
         try {
             await this.accountRepository.delete(
@@ -78,28 +78,7 @@ export class AccountService {
         }
     
 }
-//     async UpdateAccountByMovement(account: AccountUpdateDto) {
-       
-//         try {
-//             await this.accountRepository.update(
-//                 account.id,
-//                 { 
-//                     title: account.title,
-//                     initial_value: account.values,
-//                     "fkUser": { id: account.fkuser },
-//                     "fkAccountType": { id: account.fktype } 
-//                  }
-//                 );
-//             return { success: "OK" };
-//         } catch (error) {
-//             return { error: 'TRANSACTION_ERROR', detail: error };
-//         }
-    
-// }
-
-
-
-   
+  
 
 
     

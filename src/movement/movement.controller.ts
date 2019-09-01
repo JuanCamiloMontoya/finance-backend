@@ -20,10 +20,10 @@ export class MovementController {
     @Get('all/:UserId')
     async GetMovement(@Param('UserId') UserId){
       console.log(UserId)
-      return this.movementService.GetMovement(UserId);
+      return this.movementService.getMovement(UserId);
     }
 
-    //todos
+   
     @Get('getAll')
     async getUserAll(){{
         const response = await this.movementService.getMovementAll();
@@ -31,22 +31,12 @@ export class MovementController {
         return response;
     }}
 
-    // @Get('expense/:UserId')
-    // async GetMovementExpense(@Param('UserId') UserId){
-    //   // console.log(UserId)
-    //   return this.movementService.GetMovementExpense(UserId);
-    // }
-
     @Get('type/:UserId/:typeId')
     async GetMovementType(@Param('UserId') UserId,@Param('typeId') typeId){
      
-      return await this.movementService.GetMovementType(UserId,typeId);
+      return await this.movementService.getMovementType(UserId,typeId);
     }
 
-    // @Get('type/:UserId')
-    // async GetMovementType(@Param('UserId') UserId){
-    //   console.log(UserId)
-    //   return this.movementService.GetMovementRevenue(UserId);
-    // }
+  
   
 }

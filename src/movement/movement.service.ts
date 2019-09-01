@@ -4,7 +4,7 @@ import { movement } from '../../entities/movement';
 import { user } from '../../entities/user';
 import { account } from '../../entities/account';
 import { category } from '../../entities/category';
-import { Repository, getManager } from 'typeorm';
+import { Repository, getManager, MoreThan, Between } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MovementCreateDto } from './dto/movementCreate.dto';
 import { AccountService } from '../account/account.service'
@@ -26,35 +26,39 @@ export class MovementService {
 
   ) { }
 
+  async getMovement(UserId) {
+    return await this.movementRepository
+      .createQueryBuilder("movement")
+      .addSelect("account.title")
+      .innerJoin("account", "account", "movement.fk_account = account.id")
+      .where("account.fk_user= :id", { id: UserId })
+      .getMany();
+  }
+
+  async getMovementDate(date) {
 
 
-
-  async GetMovement(UserId) {
+    return await this.movementRepository
+    .find({
+      where:{ 
+        // date: Between('2018-11-15  10:41:30.746877') ,
+       }
+    });
+    
 
     return await this.movementRepository
       .createQueryBuilder("movement")
       .addSelect("account.title")
-
       .innerJoin("account", "account", "movement.fk_account = account.id")
-
-      .where("account.fk_user= :id", { id: UserId })
-
-      //la fk debe ser tal cual como esta en entities al lado donde se referencia
+      .where("account.fk_user= :id", { id: date })
       .getMany();
-    //.execute();
-    /* */
-
-
   }
-
 
   async getMovementAll() {
     return await this.movementRepository.find();
   }
 
-
-
-  async GetMovementType(UserId, typeId) {
+  async getMovementType(UserId, typeId) {
     return await this.userRepository
       .createQueryBuilder("user")
       .select("movement.id", "id")
@@ -69,7 +73,6 @@ export class MovementService {
       .innerJoin("movement_type", "movement_type", "movement_type.id = category.fk_movement_type")
       .where("user.id = :user_id", { user_id: UserId })
       .andWhere("category.fk_movement_type= :type", { type: typeId })
-    
       .execute();
   }
 
@@ -90,18 +93,15 @@ export class MovementService {
           }));
       });
 
-      let type2 = await this.categoryRepository.createQueryBuilder("category").where("category.id= :id", { id: Movement.category }).execute();
+      let type2 = await this.categoryRepository.createQueryBuilder("category")
+      .where("category.id= :id",
+       { id: Movement.category })
+       .execute();
       let aux = await this.accountRepository.findOne({ id: Movement.account})    
 
       if (type2.fkMovementType = 1) {
         const aux2=aux.initial_value-Movement.value;        
-        // await this.accountRepository.createQueryBuilder()
-        //   .update(account)
-        //   .set({            
-        //     initial_value: () => "initial_value - Movement.value"
-        //   })
-        //   .where("id = :id", { id: Movement.account })
-        //   .execute();
+    
         await this.accountRepository.update(
           Movement.account,
           {
@@ -123,8 +123,8 @@ export class MovementService {
       return { error: 'TRANSACTION_ERROR', detail: error };
     }
   }
-  async DeleteAccount(AunconId) {
-       
+
+  async DeleteAccount(AunconId) {       
     try {
         await this.accountRepository.delete(
           AunconId,

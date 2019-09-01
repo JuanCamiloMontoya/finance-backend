@@ -35,10 +35,9 @@ CREATE TABLE IF NOT EXISTS `account` (
 -- Dumping data for table db_finance.account: ~3 rows (approximately)
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
 REPLACE INTO `account` (`id`, `title`, `initial_value`, `fk_user`, `fk_account_type`) VALUES
-	(1, 'cuenta 1', 15000, 1, 1),
+	(1, 'cuenta 1', 10000, 1, 1),
 	(2, 'cuenta 2', 20000, 1, 2),
-	(3, 'cuenta 2.1', 10000, 2, 1),
-	(7, 'cuentacreada1', 28000, 1, 1);
+	(3, 'cuenta 2.1', 10000, 2, 1);
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.account_type
@@ -79,15 +78,15 @@ CREATE TABLE IF NOT EXISTS `category` (
 -- Dumping data for table db_finance.category: ~9 rows (approximately)
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
 REPLACE INTO `category` (`id`, `name`, `state`, `fk_category`, `fk_movement_type`, `fk_user`) VALUES
-	(1, 'Alimentacion', '1', NULL, 2, NULL),
-	(2, 'Educacion ', '1', NULL, 2, NULL),
-	(3, 'Entretenimiento', '1', NULL, 2, NULL),
-	(4, 'Facturas', '1', NULL, 2, NULL),
-	(5, 'Hogar', '1', NULL, 2, NULL),
-	(6, 'Ropa', '1', NULL, 2, NULL),
+	(1, 'Alimentacion', '1', NULL, 1, NULL),
+	(2, 'Educacion ', '1', NULL, 1, NULL),
+	(3, 'Entretenimiento', '1', NULL, 1, NULL),
+	(4, 'Facturas', '1', NULL, 1, NULL),
+	(5, 'Hogar', '1', NULL, 1, NULL),
+	(6, 'Ropa', '1', NULL, 1, NULL),
 	(7, 'Regalo', '1', NULL, 1, NULL),
-	(8, 'Me Pagaron', '1', NULL, 1, NULL),
-	(11, 'Merienda', '1', 1, 2, 1);
+	(8, 'Me Pagaron', '1', NULL, 2, NULL),
+	(11, 'Merienda', '1', 1, 1, 1);
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.debt
@@ -142,13 +141,21 @@ CREATE TABLE IF NOT EXISTS `movement` (
   CONSTRAINT `FK_movement_account` FOREIGN KEY (`fk_account`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_movement_category` FOREIGN KEY (`fk_category`) REFERENCES `category` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `FK_movement_debt` FOREIGN KEY (`fk_debt`) REFERENCES `debt` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table db_finance.movement: ~2 rows (approximately)
+-- Dumping data for table db_finance.movement: ~10 rows (approximately)
 /*!40000 ALTER TABLE `movement` DISABLE KEYS */;
 REPLACE INTO `movement` (`id`, `value`, `date`, `description`, `state`, `fk_category`, `fk_account`, `fk_debt`) VALUES
 	(1, 10000, '2019-08-25 23:06:28', 'description1', '1', 1, 1, NULL),
-	(2, 5000, '2019-08-25 23:07:06', 'desc 2', '2', 11, 1, NULL);
+	(2, 5000, '2019-08-25 23:07:06', 'desc 2', '2', 11, 1, NULL),
+	(3, 10230, '2019-08-28 13:47:36', 'weqweqweqwe', '2', 7, 1, NULL),
+	(4, 100, '2019-08-28 14:19:49', 'dasdasdasd', '2', 8, 1, NULL),
+	(16, 1800, '2019-08-29 13:34:34', 'fdsf', '1', NULL, 2, NULL),
+	(21, 500, '2019-08-28 18:30:31', 'Papu si inserto :D ', '1', 5, 1, NULL),
+	(22, 500, '2019-08-28 18:31:59', 'Papu si inserto :D ', '1', 5, 1, NULL),
+	(23, 500, '2019-08-28 18:33:30', 'Papu si inserto :D ', '1', 5, 1, NULL),
+	(24, 500, '2019-08-28 18:34:17', 'Papu si inserto :D ', '1', 5, 1, NULL),
+	(25, 500, '2019-08-28 18:34:23', 'Papu si inserto :D ', '1', 5, 1, NULL);
 /*!40000 ALTER TABLE `movement` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.movement_type
