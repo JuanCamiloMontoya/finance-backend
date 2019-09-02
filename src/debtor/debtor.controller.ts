@@ -1,9 +1,10 @@
-import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, Put, BadGatewayException } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, Put, BadGatewayException, UseGuards, Req } from '@nestjs/common';
 import { DebtorService } from './debtor.service';
 
 import { DebtorDtoCreate } from './dto/debtorCreate.dto';
 import { DebtorDtoUpdate } from './dto/debtorUpdate.dto';
 import { DebtDtoCreate } from './dto/debtCreate.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('debtor')
 export class DebtorController {
@@ -11,6 +12,7 @@ export class DebtorController {
       ) { }
   
     @Post('create')
+    @UseGuards(AuthGuard('bearer'))
     async createDebtor(@Body() body: DebtorDtoCreate) {
       const response: any = await this.debtorService.createDebtor(body);
       if (response.success)
@@ -19,6 +21,7 @@ export class DebtorController {
     }
   
     @Post('create-debt')
+    @UseGuards(AuthGuard('bearer'))
     async createDebt(@Body() body: DebtDtoCreate) {
       const response: any = await this.debtorService.createDebt(body);
       if (response.success)
@@ -27,21 +30,25 @@ export class DebtorController {
     }
   
     @Get('get-all')
+    @UseGuards(AuthGuard('bearer'))
     async getDebtorAll() {
       return await this.debtorService.getDebtorAll();
     }
   
     @Get('get-id/:id')
+    @UseGuards(AuthGuard('bearer'))
     async getDebtorId(@Param('id') id: number) {
       return await this.debtorService.getDebtorId(id);
     }
   
-    @Get('get-debt-user/:id')
-    async getDebtByUser(@Param('id') id: number) {
-      return await this.debtorService.getDebtByUser(id);
+    @Get('user/get-debt')
+    @UseGuards(AuthGuard('bearer'))
+    async getDebtByUser(@Req() req) {
+      return await this.debtorService.getDebtByUser(req.user.id);
     }
   
     @Put('update')
+    @UseGuards(AuthGuard('bearer'))
     async updateDebtor(@Body() body: DebtorDtoUpdate) {
       const response: any = await this.debtorService.updateDebtor(body);
       if (response.success)
