@@ -20,31 +20,33 @@ export class DebtorService {
     ) { }
 
     async createDebtor(debtor: DebtorDtoCreate) {
+        let res;
         try {
             await getManager().transaction(async entityManager => {
-                await entityManager.save(
+                res = await entityManager.save(
                     this.debtorRepository.create({
                         "name": debtor.name,
                         "fkUser": { id: debtor.fk_user }
                     }));
             });
-            return { success: "OK" };
+            return { success: 'OK' };
         } catch (error) {
             return { error: 'TRANSACTION_ERROR', detail: error };
         }
     }
 
     async createDebt(debt: DebtDtoCreate) {
+        let res;
         try {
             await getManager().transaction(async entityManager => {
-                await entityManager.save(
+                res = await entityManager.save(
                     this.debtRepository.create({
                         "description": debt.description,
                         "value": debt.value,
                         "fkDebtor": { id: debt.fk_debtor }
                     }));
             });
-            return { success: "OK" };
+            return { success: 'OK' };
         } catch (error) {
             return { error: 'TRANSACTION_ERROR', detail: error };
         }
@@ -55,29 +57,22 @@ export class DebtorService {
     }
 
     async getDebtorId(id: number) {
-        return await this.debtorRepository.findOne({ id: id });
+        return await this.debtorRepository.findOne({ id });
     }
 
     async getDebtByUser(id: number) {
         return this.userRepository.createQueryBuilder()
-            .select()
             .innerJoinAndSelect("user.debtors", "debtor")
             .innerJoinAndSelect("debtor.debts", "debt")
-            .where("user.id = :id", {id})
+            .where("user.id = :id", { id })
             .getMany();
     }
 
     async updateDebtor(debtor: DebtorDtoUpdate) {
-        try {
-            await this.debtorRepository.update(
-                debtor.id,
-                {
-                    name: debtor.name,
-                    state: debtor.state
-                });
-            return { success: "OK" };
-        } catch (error) {
-            return { error: 'TRANSACTION_ERROR', detail: error };
-        }
+        let res;
+        res = await this.debtorRepository.update(debtor.id, debtor);
+        return res.raw.changedRows == 0 ? { error: 'NO_EXISTS' } : { success: 'OK' };
+    } catch(error) {
+        return { error: 'TRANSACTION_ERROR', detail: error };
     }
 }
