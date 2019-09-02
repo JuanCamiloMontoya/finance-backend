@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { user } from '../../entities/user';
+import { HttpStrategy } from '../common/strategys/http.strategy';
 
 @Module({
   imports:[
@@ -11,6 +12,6 @@ import { user } from '../../entities/user';
     JwtModule.register({ secret: 'caol' })
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService, HttpStrategy]
 })
 export class AuthModule {}
