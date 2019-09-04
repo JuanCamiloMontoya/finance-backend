@@ -16,9 +16,9 @@ export class debt {
 
     @Column("varchar",{ 
         nullable:false,
-        name:"desciption"
+        name:"description"
         })
-    desciption:string;
+        description:string;
         
 
     @Column("date",{ 

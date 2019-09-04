@@ -13,12 +13,10 @@
 
 
 -- Dumping database structure for db_finance
-DROP DATABASE IF EXISTS `db_finance`;
 CREATE DATABASE IF NOT EXISTS `db_finance` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `db_finance`;
 
 -- Dumping structure for table db_finance.account
-DROP TABLE IF EXISTS `account`;
 CREATE TABLE IF NOT EXISTS `account` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(45) NOT NULL,
@@ -30,9 +28,9 @@ CREATE TABLE IF NOT EXISTS `account` (
   KEY `FK_account_account_type` (`fk_account_type`) USING BTREE,
   CONSTRAINT `FK_account_type` FOREIGN KEY (`fk_account_type`) REFERENCES `account_type` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_account_user_1` FOREIGN KEY (`fk_user`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table db_finance.account: ~3 rows (approximately)
+-- Dumping data for table db_finance.account: ~4 rows (approximately)
 /*!40000 ALTER TABLE `account` DISABLE KEYS */;
 REPLACE INTO `account` (`id`, `title`, `initial_value`, `fk_user`, `fk_account_type`) VALUES
 	(1, 'cuenta 1', 10000, 1, 1),
@@ -41,11 +39,10 @@ REPLACE INTO `account` (`id`, `title`, `initial_value`, `fk_user`, `fk_account_t
 /*!40000 ALTER TABLE `account` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.account_type
-DROP TABLE IF EXISTS `account_type`;
 CREATE TABLE IF NOT EXISTS `account_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `state` varchar(1) NOT NULL,
+  `state` varchar(10) NOT NULL DEFAULT 'Active',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
@@ -58,11 +55,10 @@ REPLACE INTO `account_type` (`id`, `name`, `state`) VALUES
 /*!40000 ALTER TABLE `account_type` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.category
-DROP TABLE IF EXISTS `category`;
 CREATE TABLE IF NOT EXISTS `category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
-  `state` varchar(1) NOT NULL,
+  `state` varchar(10) NOT NULL DEFAULT 'Active',
   `fk_category` int(11) DEFAULT NULL,
   `fk_movement_type` int(11) DEFAULT NULL,
   `fk_user` int(11) DEFAULT NULL,
@@ -90,47 +86,51 @@ REPLACE INTO `category` (`id`, `name`, `state`, `fk_category`, `fk_movement_type
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.debt
-DROP TABLE IF EXISTS `debt`;
 CREATE TABLE IF NOT EXISTS `debt` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `desciption` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
   `date` date NOT NULL,
   `value` decimal(10,0) NOT NULL DEFAULT '0',
-  `state` varchar(10) NOT NULL DEFAULT '1',
+  `key` varchar(12) NOT NULL DEFAULT '0',
+  `state` varchar(10) NOT NULL DEFAULT 'Active',
   `fk_debtor` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_debt_debtor_1` (`fk_debtor`),
   CONSTRAINT `FK_debt_debtor` FOREIGN KEY (`fk_debtor`) REFERENCES `debtor` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
--- Dumping data for table db_finance.debt: ~0 rows (approximately)
+-- Dumping data for table db_finance.debt: ~2 rows (approximately)
 /*!40000 ALTER TABLE `debt` DISABLE KEYS */;
+REPLACE INTO `debt` (`id`, `description`, `date`, `value`, `key`, `state`, `fk_debtor`) VALUES
+	(1, 'fdsafsd', '2019-09-02', 5000, 'revenue', '1', 2),
+	(5, 'por una papitas', '2019-09-02', 1500, 'expenses', '1', 1);
 /*!40000 ALTER TABLE `debt` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.debtor
-DROP TABLE IF EXISTS `debtor`;
 CREATE TABLE IF NOT EXISTS `debtor` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(0) NOT NULL,
-  `state` varchar(10) NOT NULL DEFAULT '1',
+  `name` varchar(100) NOT NULL,
+  `state` varchar(10) NOT NULL DEFAULT 'Active',
   `fk_user` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_debtor_user_1` (`fk_user`),
   CONSTRAINT `fk_debtor_user_1` FOREIGN KEY (`fk_user`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- Dumping data for table db_finance.debtor: ~0 rows (approximately)
+-- Dumping data for table db_finance.debtor: ~2 rows (approximately)
 /*!40000 ALTER TABLE `debtor` DISABLE KEYS */;
+REPLACE INTO `debtor` (`id`, `name`, `state`, `fk_user`) VALUES
+	(1, 'dadsa', '1', 2),
+	(2, 'antonieta', '1', 1);
 /*!40000 ALTER TABLE `debtor` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.movement
-DROP TABLE IF EXISTS `movement`;
 CREATE TABLE IF NOT EXISTS `movement` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `value` double NOT NULL,
   `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `description` varchar(100) NOT NULL,
-  `state` varchar(10) NOT NULL,
+  `state` varchar(10) NOT NULL DEFAULT 'Active',
   `fk_category` int(11) DEFAULT NULL,
   `fk_account` int(11) NOT NULL,
   `fk_debt` int(255) DEFAULT NULL,
@@ -141,41 +141,37 @@ CREATE TABLE IF NOT EXISTS `movement` (
   CONSTRAINT `FK_movement_account` FOREIGN KEY (`fk_account`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_movement_category` FOREIGN KEY (`fk_category`) REFERENCES `category` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `FK_movement_debt` FOREIGN KEY (`fk_debt`) REFERENCES `debt` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- Dumping data for table db_finance.movement: ~10 rows (approximately)
+-- Dumping data for table db_finance.movement: ~6 rows (approximately)
 /*!40000 ALTER TABLE `movement` DISABLE KEYS */;
 REPLACE INTO `movement` (`id`, `value`, `date`, `description`, `state`, `fk_category`, `fk_account`, `fk_debt`) VALUES
-	(1, 10000, '2019-08-25 23:06:28', 'description1', '1', 1, 1, NULL),
-	(2, 5000, '2019-08-25 23:07:06', 'desc 2', '2', 11, 1, NULL),
-	(3, 10230, '2019-08-28 13:47:36', 'weqweqweqwe', '2', 7, 1, NULL),
-	(4, 100, '2019-08-28 14:19:49', 'dasdasdasd', '2', 8, 1, NULL),
+	(1, 10000, '2019-07-25 23:06:28', 'description1', '1', 1, 1, NULL),
+	(2, 5000, '2019-05-25 23:07:06', 'desc 2', '2', 11, 1, NULL),
+	(3, 10230, '2019-01-28 13:47:36', 'weqweqweqwe', '2', 7, 1, NULL),
+	(4, 100, '2019-12-27 14:19:49', 'dasdasdasd', '2', 8, 1, NULL),
+	(5, 1000, '2019-08-31 17:28:01', 'dasdasfagsfd', '1', 2, 2, NULL),
 	(16, 1800, '2019-08-29 13:34:34', 'fdsf', '1', NULL, 2, NULL),
-	(21, 500, '2019-08-28 18:30:31', 'Papu si inserto :D ', '1', 5, 1, NULL),
-	(22, 500, '2019-08-28 18:31:59', 'Papu si inserto :D ', '1', 5, 1, NULL),
-	(23, 500, '2019-08-28 18:33:30', 'Papu si inserto :D ', '1', 5, 1, NULL),
-	(24, 500, '2019-08-28 18:34:17', 'Papu si inserto :D ', '1', 5, 1, NULL),
-	(25, 500, '2019-08-28 18:34:23', 'Papu si inserto :D ', '1', 5, 1, NULL);
+	(17, 1500, '2019-09-02 15:23:30', 'descripcion', '1', NULL, 1, 5);
 /*!40000 ALTER TABLE `movement` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.movement_type
-DROP TABLE IF EXISTS `movement_type`;
 CREATE TABLE IF NOT EXISTS `movement_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `state` varchar(1) DEFAULT NULL,
+  `state` varchar(10) DEFAULT 'Active',
+  `key` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table db_finance.movement_type: ~2 rows (approximately)
 /*!40000 ALTER TABLE `movement_type` DISABLE KEYS */;
-REPLACE INTO `movement_type` (`id`, `name`, `state`) VALUES
-	(1, 'Gastos', '1'),
-	(2, 'Ingresos', '1');
+REPLACE INTO `movement_type` (`id`, `name`, `state`, `key`) VALUES
+	(1, 'Gastos', '1', 'expense'),
+	(2, 'Ingresos', '1', 'revenue');
 /*!40000 ALTER TABLE `movement_type` ENABLE KEYS */;
 
 -- Dumping structure for table db_finance.user
-DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
@@ -183,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `password` varchar(50) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `use_email` (`email`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- Dumping data for table db_finance.user: ~3 rows (approximately)
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
