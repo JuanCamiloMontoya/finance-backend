@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { MovementModule } from './movement/movement.module';
 import { AccountModule } from './account/account.module';
 import { CategoryModule } from './category/category.module';
+import { DebtorModule } from './debtor/debtor.module';
 
 @Module({
   imports: [
@@ -15,8 +16,8 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     MovementModule,
     CategoryModule,
-    AccountModule
-    
+    AccountModule,
+    DebtorModule
   ],
   controllers: [AppController],
   providers: [AppService],
