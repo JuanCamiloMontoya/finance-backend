@@ -10,6 +10,7 @@ import { MovementCreateDto } from './dto/movementCreate.dto';
 import { AccountService } from '../account/account.service'
 
 import { MovementUpdateDto } from './dto/movementUpdate.dto';
+import { movement_type } from '../../entities/movement_type';
 
 @Injectable()
 export class MovementService {
@@ -35,23 +36,28 @@ export class MovementService {
       .getMany();
   }
 
-  async getMovementDate(date) {
+  async updateMovement(date) {
 
+    switch (date) {
+      case movement_type[""]:
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor1
+        break;
+      case 2:
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor2
+        break;
+   
+      case "":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+        break;
 
-    return await this.movementRepository
-    .find({
-      where:{ 
-        // date: Between('2018-11-15  10:41:30.746877') ,
-       }
-    });
+      default:
+        //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+        break;
+    }
+
     
 
-    return await this.movementRepository
-      .createQueryBuilder("movement")
-      .addSelect("account.title")
-      .innerJoin("account", "account", "movement.fk_account = account.id")
-      .where("account.fk_user= :id", { id: date })
-      .getMany();
+
   }
 
   async getMovementAll() {
