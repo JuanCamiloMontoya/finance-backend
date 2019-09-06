@@ -43,6 +43,7 @@ export class movement {
     @Column("varchar",{ 
         nullable:false,
         length:10,
+        default: () => "'Active'",
         name:"state"
         })
     state:string;

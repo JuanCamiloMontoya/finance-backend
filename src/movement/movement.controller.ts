@@ -13,6 +13,8 @@ export class MovementController {
     async createMovement(@Body() body: MovementCreateDto){{
       const response = await this.movementService.createMovement(body);
       console.log(response);
+      const response1 = await this.movementService.updateMovement(body,"create_movement"); 
+      console.log(response1);
         return response;
     }}
     

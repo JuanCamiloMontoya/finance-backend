@@ -20,6 +20,7 @@ export class MovementService {
     // private readonly accountService: AccountService,
 
     @InjectRepository(category) private readonly categoryRepository: Repository<category>,
+    @InjectRepository(movement_type) private readonly movement_typeRepository: Repository<movement_type>,
     @InjectRepository(account) private readonly accountRepository: Repository<account>,
     @InjectRepository(user) private readonly userRepository: Repository<user>,
 
@@ -36,27 +37,101 @@ export class MovementService {
       .getMany();
   }
 
-  async updateMovement(date) {
-
-    switch (date) {
-      case movement_type[""]:
+  async updateMovement(date, type) {
+   
+    switch (type) {
+      case "update_debtor":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor1
         break;
-      case 2:
+
+
+
+      case "delete_debtor":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor2
         break;
-   
-      case "":
+
+
+
+
+
+      case "create_debtor":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
         break;
 
-      default:
-        //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+
+      
+
+
+
+      case "create_movement":
+          console.log("fdsfsf");
+        try{
+        // let movementType = await this.categoryRepository.find(  { id: date.category }, )
+         let movementType = await this.categoryRepository
+          .createQueryBuilder("category")
+          .select("type.key","key")
+          .innerJoin("movement_type","type", "type.id = category.fk_movement_type")
+          .where("category.id= :id",
+            { id: date.category })
+          .execute();
+
+          // let movementType = await this.movement_typeRepository
+          // .createQueryBuilder("movement_type")
+          // .select("movement_type.key")
+          // .innerJoin("category", "movement_type.id = category.fk_movement_type")
+          // .where("category.id= :id",
+          //   { id: date.category })
+          // .execute();
+          console.log(movementType);
+          console.log(movementType.type);
+          
+        //   let algo = movementType.
+        // console.log();
+      //  let accountValuesOld = await this.accountRepository.findOne({ id: date.account })
+        // if (movementType.movementType.key = "expense") {
+        //   const accountValuesNew = accountValuesOld.initial_value - date.value;
+        //   await this.accountRepository.update(
+        //     date.account,
+        //     {
+        //       initial_value: accountValuesNew,
+        //     }
+        //   );
+        // } else {
+
+        //   const accountValuesNew = accountValuesOld.initial_value + date.value;
+        //   await this.accountRepository.update(
+        //     date.account,
+        //     {
+        //       initial_value: accountValuesNew,
+        //     }
+        //   );
+
+        // }
+        return { success: "OK" };
+      } catch (error) {
+        return { error: 'TRANSACTION_ERROR', detail: error };
+      }
+    
         break;
+
+
+
+
+
+      case "delete_movement":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+        break;
+
+      case "update_movement":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+        break;
+
+      // default:
+      //   //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+      //   break;
     }
 
-    
-
+ 
 
   }
 
@@ -72,7 +147,7 @@ export class MovementService {
       .addSelect("movement.date", "date")
       .addSelect("movement.description", "description")
       .addSelect("category.name", "category")
-      .addSelect("account.title", "account")      
+      .addSelect("account.title", "account")
       .innerJoin("account", "account", "account.fk_user = user.id")
       .innerJoin("movement", "movement", "movement.fk_account = account.id")
       .innerJoin("category", "category", "category.id = movement.fk_category")
@@ -99,49 +174,49 @@ export class MovementService {
           }));
       });
 
-      let type2 = await this.categoryRepository.createQueryBuilder("category")
-      .where("category.id= :id",
-       { id: Movement.category })
-       .execute();
-      let aux = await this.accountRepository.findOne({ id: Movement.account})    
+      // let type2 = await this.categoryRepository.createQueryBuilder("category")
+      //   .where("category.id= :id",
+      //     { id: Movement.category })
+      //   .execute();
+      // let aux = await this.accountRepository.findOne({ id: Movement.account })
 
-      if (type2.fkMovementType = 1) {
-        const aux2=aux.initial_value-Movement.value;        
-    
-        await this.accountRepository.update(
-          Movement.account,
-          {
-             initial_value:aux2 ,
-          }
-        );
+      // if (type2.fkMovementType = 1) {
+      //   const aux2 = aux.initial_value - Movement.value;
 
-      } else {
-        const aux2=aux.initial_value+Movement.value;
-        await this.accountRepository.update(        
-          Movement.account,
-          {
-             initial_value:aux2 ,
-          }
-        );
-      }
+      //   await this.accountRepository.update(
+      //     Movement.account,
+      //     {
+      //       initial_value: aux2,
+      //     }
+      //   );
+
+      // } else {
+      //   const aux2 = aux.initial_value + Movement.value;
+      //   await this.accountRepository.update(
+      //     Movement.account,
+      //     {
+      //       initial_value: aux2,
+      //     }
+      //   );
+      // }
       return { success: "OK" };
     } catch (error) {
       return { error: 'TRANSACTION_ERROR', detail: error };
     }
   }
 
-  async DeleteAccount(AunconId) {       
+  async DeleteAccount(AunconId) {
     try {
-        await this.accountRepository.delete(
-          AunconId,
-           
-            );
-        return { success: "OK" };
+      await this.accountRepository.delete(
+        AunconId,
+
+      );
+      return { success: "OK" };
     } catch (error) {
-        return { error: 'TRANSACTION_ERROR', detail: error };
+      return { error: 'TRANSACTION_ERROR', detail: error };
     }
 
-}
+  }
 
 
 

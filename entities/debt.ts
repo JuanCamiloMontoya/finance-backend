@@ -18,7 +18,7 @@ export class debt {
         nullable:false,
         name:"description"
         })
-        description:string;
+    description:string;
         
 
     @Column("date",{ 
@@ -39,8 +39,17 @@ export class debt {
 
     @Column("varchar",{ 
         nullable:false,
+        length:12,
+        default: () => "'0'",
+        name:"key"
+        })
+    key:string;
+        
+
+    @Column("varchar",{ 
+        nullable:false,
         length:10,
-        default: () => "'1'",
+        default: () => "'Active'",
         name:"state"
         })
     state:string;

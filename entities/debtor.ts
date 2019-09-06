@@ -16,6 +16,7 @@ export class debtor {
 
     @Column("varchar",{ 
         nullable:false,
+        length:100,
         name:"name"
         })
     name:string;
@@ -24,14 +25,14 @@ export class debtor {
     @Column("varchar",{ 
         nullable:false,
         length:10,
-        default: () => "'1'",
+        default: () => "'Active'",
         name:"state"
         })
     state:string;
         
 
    
-    @ManyToOne(type=>user, user=>user.debtors,{  nullable:false,onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>user, user=>user.debtors,{  nullable:false,onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
     @JoinColumn({ name:'fk_user'})
     fkUser:user | null;
 
