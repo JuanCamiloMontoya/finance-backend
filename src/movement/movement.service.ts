@@ -37,43 +37,32 @@ export class MovementService {
       .getMany();
   }
 
-  async updateMovement(date, type) {
-   
+  async updateMovement(data, type) {
+
     switch (type) {
       case "update_debtor":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor1
         break;
 
-
-
       case "delete_debtor":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor2
         break;
-
-
-
-
 
       case "create_debtor":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
         break;
 
-
-      
-
-
-
       case "create_movement":
-          console.log("fdsfsf");
-        try{
-        // let movementType = await this.categoryRepository.find(  { id: date.category }, )
-         let movementType = await this.categoryRepository
-          .createQueryBuilder("category")
-          .select("type.key","key")
-          .innerJoin("movement_type","type", "type.id = category.fk_movement_type")
-          .where("category.id= :id",
-            { id: date.category })
-          .execute();
+        try {
+          // let movementType = await this.categoryRepository.find(  { id: data.category }, )
+          
+          console.log(data);
+          let movementType = await this.movement_typeRepository
+            .createQueryBuilder()
+            .select("movement_type.key")
+            .innerJoin("movement_type.categorys", "category")
+            .where("category.id = :id", {id: data.category})
+            .getOne();
 
           // let movementType = await this.movement_typeRepository
           // .createQueryBuilder("movement_type")
@@ -82,41 +71,35 @@ export class MovementService {
           // .where("category.id= :id",
           //   { id: date.category })
           // .execute();
-          console.log(movementType);
-          console.log(movementType.type);
+          console.log(movementType.key);
+
           
-        //   let algo = movementType.
-        // console.log();
-      //  let accountValuesOld = await this.accountRepository.findOne({ id: date.account })
-        // if (movementType.movementType.key = "expense") {
-        //   const accountValuesNew = accountValuesOld.initial_value - date.value;
-        //   await this.accountRepository.update(
-        //     date.account,
-        //     {
-        //       initial_value: accountValuesNew,
-        //     }
-        //   );
-        // } else {
+           let accountValuesOld = await this.accountRepository.findOne({ id: data.account })
+          if (movementType.key = "expense") {
+            const accountValuesNew = accountValuesOld.initial_value - data.value;
+            await this.accountRepository.update(
+              data.account,
+              {
+                initial_value: accountValuesNew,
+              }
+            );
+          } else {
 
-        //   const accountValuesNew = accountValuesOld.initial_value + date.value;
-        //   await this.accountRepository.update(
-        //     date.account,
-        //     {
-        //       initial_value: accountValuesNew,
-        //     }
-        //   );
+            const accountValuesNew = accountValuesOld.initial_value + data.value;
+            await this.accountRepository.update(
+              data.account,
+              {
+                initial_value: accountValuesNew,
+              }
+            );
 
-        // }
-        return { success: "OK" };
-      } catch (error) {
-        return { error: 'TRANSACTION_ERROR', detail: error };
-      }
-    
+          }
+          return { success: "OK" };
+        } catch (error) {
+          return { error: 'TRANSACTION_ERROR', detail: error };
+        }
+
         break;
-
-
-
-
 
       case "delete_movement":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
@@ -130,9 +113,6 @@ export class MovementService {
       //   //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
       //   break;
     }
-
- 
-
   }
 
   async getMovementAll() {
