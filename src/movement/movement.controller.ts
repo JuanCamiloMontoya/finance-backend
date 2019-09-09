@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import {  Get, UseGuards, Req, SetMetadata, Param ,Post,Body} from '@nestjs/common';
+import {  Get, UseGuards, Req, SetMetadata,Delete, Param ,Post,Body} from '@nestjs/common';
 import { MovementService } from './movement.service';
 import {MovementCreateDto} from './dto/movementCreate.dto';
 
@@ -11,11 +11,18 @@ export class MovementController {
 
     @Post('create')
     async createMovement(@Body() body: MovementCreateDto){{
-      const response = await this.movementService.createMovement(body);
-      console.log(response);
+      
+      
       const response1 = await this.movementService.updateMovement(body,"create_movement"); 
-      console.log(response1);
+      if( response1.success =="OK"){
+        const response = await this.movementService.createMovement(body);
         return response;
+      }else{
+        return response1;
+      }
+      
+     
+        
     }}
     
 
@@ -39,6 +46,13 @@ export class MovementController {
       return await this.movementService.getMovementType(UserId,typeId);
     }
 
+
+  @Delete('delete/:MovementId')
+    async DeleteAccountId(@Param('MovementId') MovementId){         
+      const response = await this.movementService.updateMovement(MovementId,"delete_movement"); 
+      console.log(response);
+      return  await this.movementService.deleteMovement(MovementId);
+    }
   
   
 }

@@ -54,56 +54,95 @@ export class MovementService {
 
       case "create_movement":
         try {
-          // let movementType = await this.categoryRepository.find(  { id: data.category }, )
-          
-          console.log(data);
+
           let movementType = await this.movement_typeRepository
             .createQueryBuilder()
             .select("movement_type.key")
             .innerJoin("movement_type.categorys", "category")
-            .where("category.id = :id", {id: data.category})
+            .where("category.id = :id", { id: data.category })
             .getOne();
-
-          // let movementType = await this.movement_typeRepository
-          // .createQueryBuilder("movement_type")
-          // .select("movement_type.key")
-          // .innerJoin("category", "movement_type.id = category.fk_movement_type")
-          // .where("category.id= :id",
-          //   { id: date.category })
-          // .execute();
-          console.log(movementType.key);
-
           
-           let accountValuesOld = await this.accountRepository.findOne({ id: data.account })
-          if (movementType.key = "expense") {
-            const accountValuesNew = accountValuesOld.initial_value - data.value;
-            await this.accountRepository.update(
-              data.account,
-              {
-                initial_value: accountValuesNew,
-              }
-            );
+          let accountValuesOld = await this.accountRepository.findOne({ id: data.account })
+          if (movementType.key == "expense") {
+            if (accountValuesOld.initial_value > data.value) {
+              const accountValuesNew = accountValuesOld.initial_value - data.value;
+              await this.accountRepository.update(
+                data.account,
+                {
+                  initial_value: accountValuesNew,
+                }
+              );
+            } else {
+              return { success: "Fondos Insuficientes" };
+            }
           } else {
 
             const accountValuesNew = accountValuesOld.initial_value + data.value;
+          
             await this.accountRepository.update(
               data.account,
               {
                 initial_value: accountValuesNew,
               }
             );
-
           }
           return { success: "OK" };
         } catch (error) {
           return { error: 'TRANSACTION_ERROR', detail: error };
         }
 
-        break;
 
       case "delete_movement":
-        //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
-        break;
+        try {
+
+          let NewData = await this.movementRepository
+            .createQueryBuilder()
+            .select("movement.value")
+            .addSelect("Category.name")
+            .addSelect("type.key")
+            .addSelect("Account.initial_value")
+            .addSelect("Account.id")
+            .innerJoin("movement.fkCategory", "Category")
+            .innerJoin("movement.fkAccount", "Account")
+            .innerJoin("Category.fkMovementType", "type")
+            .where("movement.id = :id", { id: data })
+            .getOne();              
+
+         // console.log(NewData);
+          // let movement = await this.movementRepository
+          //   .createQueryBuilder()
+          //   // .select("movement_type.key")
+          //   .innerJoinAndSelect("movement.fkCategory", "category")
+          //   .innerJoinAndSelect("movement.fkAccount", "Account")
+          //   .innerJoinAndSelect("category.fkMovementType", "type")
+          //   .where("movement.id = :id", { id: data })
+          //   .getOne();
+          // console.log(movement);         
+      
+          if (NewData.fkCategory.fkMovementType.key == "expense") {
+            
+              const accountValuesNew = NewData.fkAccount.initial_value + NewData.value;
+              await this.accountRepository.update(
+                NewData.fkAccount.id,
+                {
+                  initial_value: accountValuesNew,
+                }
+              );
+                   
+          } else {
+            const accountValuesNew = NewData.fkAccount.initial_value - NewData.value;
+            await this.accountRepository.update(
+              NewData.fkAccount.id,
+              {
+                initial_value: accountValuesNew,
+              }
+            );
+          }
+          return { success: "OK" };
+        } catch (error) {
+          return { error: 'TRANSACTION_ERROR', detail: error };
+        }
+
 
       case "update_movement":
         //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
@@ -144,51 +183,25 @@ export class MovementService {
       await getManager().transaction(async entityManager => {
         await entityManager.save(
           this.movementRepository.create({
-            "fkAccount": { id: Movement.account },
-            "fkCategory": { id: Movement.category },
-            "fkDebt": { id: Movement.debt },
+            "fkAccount": { id: Movement.IDaccount },
+            "fkCategory": { id: Movement.IDcategory },
+            "fkDebt": { id: Movement.IDdebt },
             "value": Movement.value,
             "description": Movement.description,
             "state": Movement.state,
 
           }));
       });
-
-      // let type2 = await this.categoryRepository.createQueryBuilder("category")
-      //   .where("category.id= :id",
-      //     { id: Movement.category })
-      //   .execute();
-      // let aux = await this.accountRepository.findOne({ id: Movement.account })
-
-      // if (type2.fkMovementType = 1) {
-      //   const aux2 = aux.initial_value - Movement.value;
-
-      //   await this.accountRepository.update(
-      //     Movement.account,
-      //     {
-      //       initial_value: aux2,
-      //     }
-      //   );
-
-      // } else {
-      //   const aux2 = aux.initial_value + Movement.value;
-      //   await this.accountRepository.update(
-      //     Movement.account,
-      //     {
-      //       initial_value: aux2,
-      //     }
-      //   );
-      // }
       return { success: "OK" };
     } catch (error) {
       return { error: 'TRANSACTION_ERROR', detail: error };
     }
   }
 
-  async DeleteAccount(AunconId) {
+  async deleteMovement(MovementId) {
     try {
-      await this.accountRepository.delete(
-        AunconId,
+      await this.movementRepository.delete(
+        MovementId,
 
       );
       return { success: "OK" };

@@ -65,11 +65,11 @@ export class AccountService {
         
     }
 
-    async deleteAccount(account) {
+    async deleteAccount(accountID) {
        
         try {
             await this.accountRepository.delete(
-                account,
+                accountID,
                
                 );
             return { success: "OK" };
