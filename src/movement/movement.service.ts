@@ -108,17 +108,6 @@ export class MovementService {
             .where("movement.id = :id", { id: data })
             .getOne();              
 
-         // console.log(NewData);
-          // let movement = await this.movementRepository
-          //   .createQueryBuilder()
-          //   // .select("movement_type.key")
-          //   .innerJoinAndSelect("movement.fkCategory", "category")
-          //   .innerJoinAndSelect("movement.fkAccount", "Account")
-          //   .innerJoinAndSelect("category.fkMovementType", "type")
-          //   .where("movement.id = :id", { id: data })
-          //   .getOne();
-          // console.log(movement);         
-      
           if (NewData.fkCategory.fkMovementType.key == "expense") {
             
               const accountValuesNew = NewData.fkAccount.initial_value + NewData.value;
@@ -168,13 +157,8 @@ export class MovementService {
       .addSelect("category.name", "category")
       .addSelect("account.title", "account")
       .innerJoin("user.accounts", "account")
-      .innerJoin("account.movements", "movements")
-     // .innerJoin("account", "account", "account.fk_user = user.id")
-      //.innerJoin("movement", "movement", "movement.fk_account = account.id")
-   //   .innerJoin("movement.fkAccount", "Account")
-     // .innerJoin("category", "category", "category.id = movement.fk_category")
-      .innerJoin("movements.fkCategory", "category")
-     // .innerJoin("movement_type", "movement_type", "movement_type.id = category.fk_movement_type")
+      .innerJoin("account.movements", "movements")     
+      .innerJoin("movements.fkCategory", "category") 
       .innerJoin("category.fkMovementType", "type")
       .where("user.id = :user_id", { user_id: UserId })
       .andWhere("category.fk_movement_type= :type", { type: typeId })
