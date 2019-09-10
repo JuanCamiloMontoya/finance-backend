@@ -54,20 +54,20 @@ export class MovementService {
 
       case "create_movement":
         try {
-
+         
           let movementType = await this.movement_typeRepository
             .createQueryBuilder()
             .select("movement_type.key")
             .innerJoin("movement_type.categorys", "category")
-            .where("category.id = :id", { id: data.category })
+            .where("category.id = :id", { id: data.IDcategory })
             .getOne();
           
-          let accountValuesOld = await this.accountRepository.findOne({ id: data.account })
-          if (movementType.key == "expense") {
+          let accountValuesOld = await this.accountRepository.findOne({ id: data.IDaccount });
+           if (movementType.key == "expense") {
             if (accountValuesOld.initial_value > data.value) {
               const accountValuesNew = accountValuesOld.initial_value - data.value;
               await this.accountRepository.update(
-                data.account,
+                data.IDaccount,
                 {
                   initial_value: accountValuesNew,
                 }
@@ -80,7 +80,7 @@ export class MovementService {
             const accountValuesNew = accountValuesOld.initial_value + data.value;
           
             await this.accountRepository.update(
-              data.account,
+              data.IDaccount,
               {
                 initial_value: accountValuesNew,
               }
@@ -160,17 +160,22 @@ export class MovementService {
 
   async getMovementType(UserId, typeId) {
     return await this.userRepository
-      .createQueryBuilder("user")
-      .select("movement.id", "id")
-      .addSelect("movement.value", "valor")
-      .addSelect("movement.date", "date")
-      .addSelect("movement.description", "description")
+      .createQueryBuilder()
+      .select("movements.id", "id")
+      .addSelect("movements.value", "valor")
+      .addSelect("movements.date", "date")
+      .addSelect("movements.description", "description")
       .addSelect("category.name", "category")
       .addSelect("account.title", "account")
-      .innerJoin("account", "account", "account.fk_user = user.id")
-      .innerJoin("movement", "movement", "movement.fk_account = account.id")
-      .innerJoin("category", "category", "category.id = movement.fk_category")
-      .innerJoin("movement_type", "movement_type", "movement_type.id = category.fk_movement_type")
+      .innerJoin("user.accounts", "account")
+      .innerJoin("account.movements", "movements")
+     // .innerJoin("account", "account", "account.fk_user = user.id")
+      //.innerJoin("movement", "movement", "movement.fk_account = account.id")
+   //   .innerJoin("movement.fkAccount", "Account")
+     // .innerJoin("category", "category", "category.id = movement.fk_category")
+      .innerJoin("movements.fkCategory", "category")
+     // .innerJoin("movement_type", "movement_type", "movement_type.id = category.fk_movement_type")
+      .innerJoin("category.fkMovementType", "type")
       .where("user.id = :user_id", { user_id: UserId })
       .andWhere("category.fk_movement_type= :type", { type: typeId })
       .execute();
@@ -180,6 +185,7 @@ export class MovementService {
 
   async createMovement(Movement: MovementCreateDto) {
     try {
+    
       await getManager().transaction(async entityManager => {
         await entityManager.save(
           this.movementRepository.create({
