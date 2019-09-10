@@ -40,7 +40,7 @@ export class AccountController {
     @Delete('delete/:AccountId')
     async DeleteAccountId(@Param('AccountId') AccountId){         
     
-        return  await this.accountService.DeleteAccount(AccountId);
+        return  await this.accountService.deleteAccount(AccountId);
     }
 
 }

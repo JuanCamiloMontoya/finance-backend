@@ -22,10 +22,19 @@ export class movement_type {
 
     @Column("varchar",{ 
         nullable:true,
-        length:1,
+        length:10,
+        default: () => "'Active'",
         name:"state"
         })
     state:string | null;
+        
+
+    @Column("varchar",{ 
+        nullable:true,
+        length:50,
+        name:"key"
+        })
+    key:string | null;
         
 
    

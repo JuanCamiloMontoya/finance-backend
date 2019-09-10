@@ -4,12 +4,13 @@ import { movement } from '../../entities/movement';
 import { user } from '../../entities/user';
 import { account } from '../../entities/account';
 import { category } from '../../entities/category';
-import { Repository, getManager } from 'typeorm';
+import { Repository, getManager, MoreThan, Between } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MovementCreateDto } from './dto/movementCreate.dto';
 import { AccountService } from '../account/account.service'
 
 import { MovementUpdateDto } from './dto/movementUpdate.dto';
+import { movement_type } from '../../entities/movement_type';
 
 @Injectable()
 export class MovementService {
@@ -19,6 +20,7 @@ export class MovementService {
     // private readonly accountService: AccountService,
 
     @InjectRepository(category) private readonly categoryRepository: Repository<category>,
+    @InjectRepository(movement_type) private readonly movement_typeRepository: Repository<movement_type>,
     @InjectRepository(account) private readonly accountRepository: Repository<account>,
     @InjectRepository(user) private readonly userRepository: Repository<user>,
 
@@ -26,50 +28,140 @@ export class MovementService {
 
   ) { }
 
-
-
-
-  async GetMovement(UserId) {
-
+  async getMovement(UserId) {
     return await this.movementRepository
       .createQueryBuilder("movement")
       .addSelect("account.title")
-
       .innerJoin("account", "account", "movement.fk_account = account.id")
-
       .where("account.fk_user= :id", { id: UserId })
-
-      //la fk debe ser tal cual como esta en entities al lado donde se referencia
       .getMany();
-    //.execute();
-    /* */
-
-
   }
 
+  async updateMovement(data, type) {
+
+    switch (type) {
+      case "update_debtor":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor1
+        break;
+
+      case "delete_debtor":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con el valor2
+        break;
+
+      case "create_debtor":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+        break;
+
+      case "create_movement":
+        try {
+         
+          let movementType = await this.movement_typeRepository
+            .createQueryBuilder()
+            .select("movement_type.key")
+            .innerJoin("movement_type.categorys", "category")
+            .where("category.id = :id", { id: data.IDcategory })
+            .getOne();
+          
+          let accountValuesOld = await this.accountRepository.findOne({ id: data.IDaccount });
+           if (movementType.key == "expense") {
+            if (accountValuesOld.initial_value > data.value) {
+              const accountValuesNew = accountValuesOld.initial_value - data.value;
+              await this.accountRepository.update(
+                data.IDaccount,
+                {
+                  initial_value: accountValuesNew,
+                }
+              );
+            } else {
+              return { success: "Fondos Insuficientes" };
+            }
+          } else {
+
+            const accountValuesNew = accountValuesOld.initial_value + data.value;
+          
+            await this.accountRepository.update(
+              data.IDaccount,
+              {
+                initial_value: accountValuesNew,
+              }
+            );
+          }
+          return { success: "OK" };
+        } catch (error) {
+          return { error: 'TRANSACTION_ERROR', detail: error };
+        }
+
+
+      case "delete_movement":
+        try {
+
+          let NewData = await this.movementRepository
+            .createQueryBuilder()
+            .select("movement.value")
+            .addSelect("Category.name")
+            .addSelect("type.key")
+            .addSelect("Account.initial_value")
+            .addSelect("Account.id")
+            .innerJoin("movement.fkCategory", "Category")
+            .innerJoin("movement.fkAccount", "Account")
+            .innerJoin("Category.fkMovementType", "type")
+            .where("movement.id = :id", { id: data })
+            .getOne();              
+
+          if (NewData.fkCategory.fkMovementType.key == "expense") {
+            
+              const accountValuesNew = NewData.fkAccount.initial_value + NewData.value;
+              await this.accountRepository.update(
+                NewData.fkAccount.id,
+                {
+                  initial_value: accountValuesNew,
+                }
+              );
+                   
+          } else {
+            const accountValuesNew = NewData.fkAccount.initial_value - NewData.value;
+            await this.accountRepository.update(
+              NewData.fkAccount.id,
+              {
+                initial_value: accountValuesNew,
+              }
+            );
+          }
+          return { success: "OK" };
+        } catch (error) {
+          return { error: 'TRANSACTION_ERROR', detail: error };
+        }
+
+
+      case "update_movement":
+        //Declaraciones ejecutadas cuando el resultado de expresión coincide con valorN
+        break;
+
+      // default:
+      //   //Declaraciones ejecutadas cuando ninguno de los valores coincide con el valor de la expresión
+      //   break;
+    }
+  }
 
   async getMovementAll() {
     return await this.movementRepository.find();
   }
 
-
-
-  async GetMovementType(UserId, typeId) {
+  async getMovementType(UserId, typeId) {
     return await this.userRepository
-      .createQueryBuilder("user")
-      .select("movement.id", "id")
-      .addSelect("movement.value", "valor")
-      .addSelect("movement.date", "date")
-      .addSelect("movement.description", "description")
+      .createQueryBuilder()
+      .select("movements.id", "id")
+      .addSelect("movements.value", "valor")
+      .addSelect("movements.date", "date")
+      .addSelect("movements.description", "description")
       .addSelect("category.name", "category")
-      .addSelect("account.title", "account")      
-      .innerJoin("account", "account", "account.fk_user = user.id")
-      .innerJoin("movement", "movement", "movement.fk_account = account.id")
-      .innerJoin("category", "category", "category.id = movement.fk_category")
-      .innerJoin("movement_type", "movement_type", "movement_type.id = category.fk_movement_type")
+      .addSelect("account.title", "account")
+      .innerJoin("user.accounts", "account")
+      .innerJoin("account.movements", "movements")     
+      .innerJoin("movements.fkCategory", "category") 
+      .innerJoin("category.fkMovementType", "type")
       .where("user.id = :user_id", { user_id: UserId })
       .andWhere("category.fk_movement_type= :type", { type: typeId })
-    
       .execute();
   }
 
@@ -77,65 +169,37 @@ export class MovementService {
 
   async createMovement(Movement: MovementCreateDto) {
     try {
+    
       await getManager().transaction(async entityManager => {
         await entityManager.save(
           this.movementRepository.create({
-            "fkAccount": { id: Movement.account },
-            "fkCategory": { id: Movement.category },
-            "fkDebt": { id: Movement.debt },
+            "fkAccount": { id: Movement.IDaccount },
+            "fkCategory": { id: Movement.IDcategory },
+            "fkDebt": { id: Movement.IDdebt },
             "value": Movement.value,
             "description": Movement.description,
             "state": Movement.state,
 
           }));
       });
-
-      let type2 = await this.categoryRepository.createQueryBuilder("category").where("category.id= :id", { id: Movement.category }).execute();
-      let aux = await this.accountRepository.findOne({ id: Movement.account})    
-
-      if (type2.fkMovementType = 1) {
-        const aux2=aux.initial_value-Movement.value;        
-        // await this.accountRepository.createQueryBuilder()
-        //   .update(account)
-        //   .set({            
-        //     initial_value: () => "initial_value - Movement.value"
-        //   })
-        //   .where("id = :id", { id: Movement.account })
-        //   .execute();
-        await this.accountRepository.update(
-          Movement.account,
-          {
-             initial_value:aux2 ,
-          }
-        );
-
-      } else {
-        const aux2=aux.initial_value+Movement.value;
-        await this.accountRepository.update(        
-          Movement.account,
-          {
-             initial_value:aux2 ,
-          }
-        );
-      }
       return { success: "OK" };
     } catch (error) {
       return { error: 'TRANSACTION_ERROR', detail: error };
     }
   }
-  async DeleteAccount(AunconId) {
-       
+
+  async deleteMovement(MovementId) {
     try {
-        await this.accountRepository.delete(
-          AunconId,
-           
-            );
-        return { success: "OK" };
+      await this.movementRepository.delete(
+        MovementId,
+
+      );
+      return { success: "OK" };
     } catch (error) {
-        return { error: 'TRANSACTION_ERROR', detail: error };
+      return { error: 'TRANSACTION_ERROR', detail: error };
     }
 
-}
+  }
 
 
 

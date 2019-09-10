@@ -5,8 +5,8 @@ import {movement} from "./movement";
 
 
 @Entity("account",{schema:"db_finance" } )
-@Index("FK_account_person",["fkUser",])
 @Index("FK_account_account_type",["fkAccountType",])
+@Index("FK_account_person",["fkUser",])
 export class account {
 
     @PrimaryGeneratedColumn({
@@ -32,7 +32,7 @@ export class account {
         
 
    
-    @ManyToOne(type=>user, user=>user.accounts,{  nullable:false,onDelete: 'RESTRICT',onUpdate: 'RESTRICT' })
+    @ManyToOne(type=>user, user=>user.accounts,{  nullable:false,onDelete: 'NO ACTION',onUpdate: 'NO ACTION' })
     @JoinColumn({ name:'fk_user'})
     fkUser:user | null;
 

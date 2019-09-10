@@ -13,11 +13,11 @@ export class MovementCreateDto{
     
   
     @IsNumber()
-    category: number;
+    IDcategory: number;
     
     @IsNumber()
-    account: number;
+    IDaccount: number;
     
     @IsNumber()
-    debt: number;
+    IDdebt: number;
 }
